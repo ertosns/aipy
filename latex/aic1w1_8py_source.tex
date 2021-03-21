@@ -1,0 +1,169 @@
+\hypertarget{aic1w1_8py_source}{}\doxysection{aic1w1.\+py}
+\label{aic1w1_8py_source}\index{aipy/aic1w1.py@{aipy/aic1w1.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00003 \textcolor{keyword}{import} h5py}
+\DoxyCodeLine{00004 \textcolor{keyword}{import} scipy}
+\DoxyCodeLine{00005 \textcolor{keyword}{from} utils \textcolor{keyword}{import} *}
+\DoxyCodeLine{00006 \textcolor{keyword}{from} PIL \textcolor{keyword}{import} Image}
+\DoxyCodeLine{00007 \textcolor{keyword}{from} scipy \textcolor{keyword}{import} ndimage}
+\DoxyCodeLine{00008 \textcolor{keyword}{from} lr\_utils \textcolor{keyword}{import} load\_dataset}
+\DoxyCodeLine{00009 }
+\DoxyCodeLine{00010 \textcolor{comment}{\# Loading the data (cat/non-\/cat) of assumsed n*n pictures}}
+\DoxyCodeLine{00011 train\_set\_x\_orig, train\_set\_y, test\_set\_x\_orig, test\_set\_y, classes = load\_dataset()}
+\DoxyCodeLine{00012 \textcolor{comment}{\#}}
+\DoxyCodeLine{00013 m\_train = len(train\_set\_x\_orig)}
+\DoxyCodeLine{00014 m\_test = len(test\_set\_x\_orig)}
+\DoxyCodeLine{00015 num\_px = len(test\_set\_x\_orig[0])}
+\DoxyCodeLine{00016 \textcolor{comment}{\#}}
+\DoxyCodeLine{00017 train\_set\_x\_flatten = train\_set\_x\_orig.reshape(-\/1, m\_train)}
+\DoxyCodeLine{00018 test\_set\_x\_flatten = test\_set\_x\_orig.reshape(-\/1, m\_test)}
+\DoxyCodeLine{00019 \textcolor{comment}{\#}}
+\DoxyCodeLine{00020 train\_set\_x = train\_set\_x\_flatten/255.}
+\DoxyCodeLine{00021 test\_set\_x = test\_set\_x\_flatten/255.}
+\DoxyCodeLine{00022 }
+\DoxyCodeLine{00023 \textcolor{comment}{\# Example of a picture}}
+\DoxyCodeLine{00024 index = 25}
+\DoxyCodeLine{00025 plt.imshow(train\_set\_x\_orig[index])}
+\DoxyCodeLine{00026 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"y = "} + str(train\_set\_y[:, index]) + \textcolor{stringliteral}{", it's a '"} + classes[np.squeeze(train\_set\_y[:, index])].decode(\textcolor{stringliteral}{"utf-\/8"}) +  \textcolor{stringliteral}{"' picture."})}
+\DoxyCodeLine{00027 \textcolor{comment}{\#}}
+\DoxyCodeLine{00028 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Number of training examples: m\_train = "} + str(m\_train))}
+\DoxyCodeLine{00029 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Number of testing examples: m\_test = "} + str(m\_test))}
+\DoxyCodeLine{00030 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Height/Width of each image: num\_px = "} + str(num\_px))}
+\DoxyCodeLine{00031 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Each image is of size: ("} + str(num\_px) + \textcolor{stringliteral}{", "} + str(num\_px) + \textcolor{stringliteral}{", 3)"})}
+\DoxyCodeLine{00032 \textcolor{comment}{\#}}
+\DoxyCodeLine{00033 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"train\_set\_x shape: "} + str(train\_set\_x\_orig.shape))}
+\DoxyCodeLine{00034 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"train\_set\_y shape: "} + str(train\_set\_y.shape))}
+\DoxyCodeLine{00035 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"test\_set\_x shape: "} + str(test\_set\_x\_orig.shape))}
+\DoxyCodeLine{00036 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"test\_set\_y shape: "} + str(test\_set\_y.shape))}
+\DoxyCodeLine{00037 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00038 \textcolor{stringliteral}{m\_train     209}}
+\DoxyCodeLine{00039 \textcolor{stringliteral}{m\_test  50}}
+\DoxyCodeLine{00040 \textcolor{stringliteral}{num\_px  64 }}
+\DoxyCodeLine{00041 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00042 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"train\_set\_x\_flatten shape: "} + str(train\_set\_x\_flatten.shape))}
+\DoxyCodeLine{00043 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"train\_set\_y shape: "} + str(train\_set\_y.shape))}
+\DoxyCodeLine{00044 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"test\_set\_x\_flatten shape: "} + str(test\_set\_x\_flatten.shape))}
+\DoxyCodeLine{00045 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"test\_set\_y shape: "} + str(test\_set\_y.shape))}
+\DoxyCodeLine{00046 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"sanity check after reshaping: "} + str(train\_set\_x\_flatten[0:5,0]))}
+\DoxyCodeLine{00047 }
+\DoxyCodeLine{00048 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00049 \textcolor{stringliteral}{train\_set\_x\_flatten shape   (12288, 209)}}
+\DoxyCodeLine{00050 \textcolor{stringliteral}{train\_set\_y shape   (1, 209)}}
+\DoxyCodeLine{00051 \textcolor{stringliteral}{test\_set\_x\_flatten shape    (12288, 50)}}
+\DoxyCodeLine{00052 \textcolor{stringliteral}{test\_set\_y shape    (1, 50)}}
+\DoxyCodeLine{00053 \textcolor{stringliteral}{sanity check after reshaping    [17 31 56 22 33]}}
+\DoxyCodeLine{00054 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00055 }
+\DoxyCodeLine{00056 \textcolor{keyword}{def }model(X\_train, Y\_train, X\_test, Y\_test, num\_iterations = 2000, learning\_rate = 0.5, print\_cost = False):}
+\DoxyCodeLine{00057     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00058 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00059 \textcolor{stringliteral}{    X\_train -\/-\/ training set represented by a numpy array of shape (num\_px * num\_px * 3, m\_train)}}
+\DoxyCodeLine{00060 \textcolor{stringliteral}{    Y\_train -\/-\/ training labels represented by a numpy array (vector) of shape (1, m\_train)}}
+\DoxyCodeLine{00061 \textcolor{stringliteral}{    X\_test -\/-\/ test set represented by a numpy array of shape (num\_px * num\_px * 3, m\_test)}}
+\DoxyCodeLine{00062 \textcolor{stringliteral}{    Y\_test -\/-\/ test labels represented by a numpy array (vector) of shape (1, m\_test)}}
+\DoxyCodeLine{00063 \textcolor{stringliteral}{    num\_iterations -\/-\/ hyperparameter representing the number of iterations to optimize the parameters}}
+\DoxyCodeLine{00064 \textcolor{stringliteral}{    learning\_rate -\/-\/ hyperparameter representing the learning rate used in the update rule of optimize()}}
+\DoxyCodeLine{00065 \textcolor{stringliteral}{    print\_cost -\/-\/ Set to true to print the cost every 100 iterations}}
+\DoxyCodeLine{00066 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00067 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00068 \textcolor{stringliteral}{    d -\/-\/ dictionary containing information about the model. Ŷ =A=σ(wTX+b)}}
+\DoxyCodeLine{00069 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00070     \textcolor{comment}{\# initialize parameters with zeros (≈ 1 line of code)}}
+\DoxyCodeLine{00071     m=len(X\_train)}
+\DoxyCodeLine{00072     w, b = initialize\_with\_zeros(m)}
+\DoxyCodeLine{00073 }
+\DoxyCodeLine{00074     \textcolor{comment}{\# Gradient descent (≈ 1 line of code)}}
+\DoxyCodeLine{00075     parameters, grads, costs = gradient\_descent(w, b, X\_train, Y\_train, num\_iterations, learning\_rate)}
+\DoxyCodeLine{00076     \textcolor{comment}{\#}}
+\DoxyCodeLine{00077     w = parameters[\textcolor{stringliteral}{"w"}]}
+\DoxyCodeLine{00078     b = parameters[\textcolor{stringliteral}{"b"}]}
+\DoxyCodeLine{00079     \textcolor{comment}{\#}}
+\DoxyCodeLine{00080     Y\_prediction\_test = predict(w, b, X\_test)}
+\DoxyCodeLine{00081     Y\_prediction\_train = predict(w, b, X\_train)}
+\DoxyCodeLine{00082     \textcolor{comment}{\#}}
+\DoxyCodeLine{00083     \textcolor{comment}{\# Print train/test Errors}}
+\DoxyCodeLine{00084     train\_accuracy=100 -\/ np.mean(np.abs(Y\_prediction\_train -\/ Y\_train)) * 100}
+\DoxyCodeLine{00085     test\_accuracy=100 -\/ np.mean(np.abs(Y\_prediction\_test -\/ Y\_test)) * 100}
+\DoxyCodeLine{00086     }
+\DoxyCodeLine{00087     print(\textcolor{stringliteral}{"train accuracy: \{\} \%"}.format(train\_accuracy))}
+\DoxyCodeLine{00088     print(\textcolor{stringliteral}{"test accuracy: \{\} \%"}.format(test\_accuracy))}
+\DoxyCodeLine{00089     }
+\DoxyCodeLine{00090     d = \{\textcolor{stringliteral}{"costs"}: costs,}
+\DoxyCodeLine{00091          \textcolor{stringliteral}{"Y\_prediction\_test"}: Y\_prediction\_test, }
+\DoxyCodeLine{00092          \textcolor{stringliteral}{"Y\_prediction\_train"} : Y\_prediction\_train, }
+\DoxyCodeLine{00093          \textcolor{stringliteral}{"w"} : w, }
+\DoxyCodeLine{00094          \textcolor{stringliteral}{"b"} : b,}
+\DoxyCodeLine{00095          \textcolor{stringliteral}{"learning\_rate"} : learning\_rate,}
+\DoxyCodeLine{00096          \textcolor{stringliteral}{"num\_iterations"}: num\_iterations\}}
+\DoxyCodeLine{00097     \textcolor{keywordflow}{return} d}
+\DoxyCodeLine{00098 }
+\DoxyCodeLine{00099 }
+\DoxyCodeLine{00100 }
+\DoxyCodeLine{00101 w = np.array([[0.1124579],[0.23106775]])}
+\DoxyCodeLine{00102 b = -\/0.3}
+\DoxyCodeLine{00103 X = np.array([[1.,-\/1.1,-\/3.2],[1.2,2.,0.1]])}
+\DoxyCodeLine{00104 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"predictions = "} + str(predict(w, b, X)))}
+\DoxyCodeLine{00105 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00106 \textcolor{stringliteral}{predictions = [[ 1.  1.  0.]]}}
+\DoxyCodeLine{00107 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00108 }
+\DoxyCodeLine{00109 d = model(train\_set\_x, train\_set\_y, test\_set\_x, test\_set\_y, num\_iterations = 2000, learning\_rate = 0.005, print\_cost = \textcolor{keyword}{True})}
+\DoxyCodeLine{00110 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00111 \textcolor{stringliteral}{Cost after iteration 0  0.693147}}
+\DoxyCodeLine{00112 \textcolor{stringliteral}{⋮⋮}}
+\DoxyCodeLine{00113 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00114 \textcolor{stringliteral}{⋮⋮}}
+\DoxyCodeLine{00115 \textcolor{stringliteral}{Train Accuracy  99.04306220095694 \%}}
+\DoxyCodeLine{00116 \textcolor{stringliteral}{Test Accuracy   70.0 \%}}
+\DoxyCodeLine{00117 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00118 }
+\DoxyCodeLine{00119 \textcolor{comment}{\# Example of a picture that was wrongly classified.}}
+\DoxyCodeLine{00120 index = 1}
+\DoxyCodeLine{00121 plt.imshow(test\_set\_x[:,index].reshape((num\_px, num\_px, 3)))}
+\DoxyCodeLine{00122 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"y = "} + str(test\_set\_y[0,index]) + \textcolor{stringliteral}{", you predicted that it is a \(\backslash\)""} + classes[d[\textcolor{stringliteral}{"Y\_prediction\_test"}][0,index]].decode(\textcolor{stringliteral}{"utf-\/8"}) +  \textcolor{stringliteral}{"\(\backslash\)" picture."})}
+\DoxyCodeLine{00123 }
+\DoxyCodeLine{00124 }
+\DoxyCodeLine{00125 \textcolor{comment}{\# Plot learning curve (with costs)}}
+\DoxyCodeLine{00126 costs = np.squeeze(d[\textcolor{stringliteral}{'costs'}])}
+\DoxyCodeLine{00127 plt.plot(costs)}
+\DoxyCodeLine{00128 plt.ylabel(\textcolor{stringliteral}{'cost'})}
+\DoxyCodeLine{00129 plt.xlabel(\textcolor{stringliteral}{'iterations (per hundreds)'})}
+\DoxyCodeLine{00130 plt.title(\textcolor{stringliteral}{"Learning rate ="} + str(d[\textcolor{stringliteral}{"learning\_rate"}]))}
+\DoxyCodeLine{00131 plt.show()}
+\DoxyCodeLine{00132 }
+\DoxyCodeLine{00133 learning\_rates = [0.01, 0.001, 0.0001]}
+\DoxyCodeLine{00134 models = \{\}}
+\DoxyCodeLine{00135 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} learning\_rates:}
+\DoxyCodeLine{00136     \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"learning rate is: "} + str(i))}
+\DoxyCodeLine{00137     models[str(i)] = model(train\_set\_x, train\_set\_y, test\_set\_x, test\_set\_y, num\_iterations = 1500, learning\_rate = i, print\_cost = \textcolor{keyword}{False})}
+\DoxyCodeLine{00138     \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'\(\backslash\)n'} + \textcolor{stringliteral}{"-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/"} + \textcolor{stringliteral}{'\(\backslash\)n'})}
+\DoxyCodeLine{00139 }
+\DoxyCodeLine{00140 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} learning\_rates:}
+\DoxyCodeLine{00141     plt.plot(np.squeeze(models[str(i)][\textcolor{stringliteral}{"costs"}]), label= str(models[str(i)][\textcolor{stringliteral}{"learning\_rate"}]))}
+\DoxyCodeLine{00142 }
+\DoxyCodeLine{00143 plt.ylabel(\textcolor{stringliteral}{'cost'})}
+\DoxyCodeLine{00144 plt.xlabel(\textcolor{stringliteral}{'iterations (hundreds)'})}
+\DoxyCodeLine{00145 }
+\DoxyCodeLine{00146 legend = plt.legend(loc=\textcolor{stringliteral}{'upper center'}, shadow=\textcolor{keyword}{True})}
+\DoxyCodeLine{00147 frame = legend.get\_frame()}
+\DoxyCodeLine{00148 frame.set\_facecolor(\textcolor{stringliteral}{'0.90'})}
+\DoxyCodeLine{00149 plt.show()}
+\DoxyCodeLine{00150 }
+\DoxyCodeLine{00151 }
+\DoxyCodeLine{00152 my\_image = \textcolor{stringliteral}{"my\_image.jpg"}   \textcolor{comment}{\# change this to the name of your image file }}
+\DoxyCodeLine{00153 }
+\DoxyCodeLine{00154 }
+\DoxyCodeLine{00155 \textcolor{comment}{\# We preprocess the image to fit your algorithm.}}
+\DoxyCodeLine{00156 fname = \textcolor{stringliteral}{"images/"} + my\_image}
+\DoxyCodeLine{00157 image = np.array(ndimage.imread(fname, flatten=\textcolor{keyword}{False}))}
+\DoxyCodeLine{00158 image = image/255.}
+\DoxyCodeLine{00159 my\_image = scipy.misc.imresize(image, size=(num\_px,num\_px)).reshape((1, num\_px*num\_px*3)).T}
+\DoxyCodeLine{00160 my\_predicted\_image = predict(d[\textcolor{stringliteral}{"w"}], d[\textcolor{stringliteral}{"b"}], my\_image)}
+\DoxyCodeLine{00161 }
+\DoxyCodeLine{00162 plt.imshow(image)}
+\DoxyCodeLine{00163 print(\textcolor{stringliteral}{"y = "} + str(np.squeeze(my\_predicted\_image)) + \textcolor{stringliteral}{", your algorithm predicts a \(\backslash\)""} + classes[int(np.squeeze(my\_predicted\_image)),].decode(\textcolor{stringliteral}{"utf-\/8"}) +  \textcolor{stringliteral}{"\(\backslash\)" picture."})}
+
+\end{DoxyCode}

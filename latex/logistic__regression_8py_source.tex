@@ -1,0 +1,131 @@
+\hypertarget{logistic__regression_8py_source}{}\doxysection{logistic\+\_\+regression.\+py}
+\label{logistic__regression_8py_source}\index{aipy/logistic\_regression.py@{aipy/logistic\_regression.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 }
+\DoxyCodeLine{00003 \textcolor{comment}{\#TODO need more test cases.}}
+\DoxyCodeLine{00004 }
+\DoxyCodeLine{00005 }
+\DoxyCodeLine{00010 \textcolor{keyword}{def }initialize\_with\_zeros(dim):}
+\DoxyCodeLine{00011     w = np.zeros((dim, 1))}
+\DoxyCodeLine{00012     b = 0}
+\DoxyCodeLine{00013     \textcolor{keywordflow}{return} w, b}
+\DoxyCodeLine{00014 }
+\DoxyCodeLine{00015 }
+\DoxyCodeLine{00025 \textcolor{keyword}{def }initialize\_parameters(n\_x, n\_h, n\_y):}
+\DoxyCodeLine{00026     np.random.seed(2) }
+\DoxyCodeLine{00027     W1 = np.random.randn(n\_h, n\_x)*0.01}
+\DoxyCodeLine{00028     b1 = np.zeros((n\_h, 1))}
+\DoxyCodeLine{00029     W2 = np.random.randn(n\_y, n\_h)*0.01}
+\DoxyCodeLine{00030     b2 = np.zeros((n\_y, 1))}
+\DoxyCodeLine{00031     \textcolor{keyword}{assert} (W1.shape == (n\_h, n\_x))}
+\DoxyCodeLine{00032     \textcolor{keyword}{assert} (b1.shape == (n\_h, 1))}
+\DoxyCodeLine{00033     \textcolor{keyword}{assert} (W2.shape == (n\_y, n\_h))}
+\DoxyCodeLine{00034     \textcolor{keyword}{assert} (b2.shape == (n\_y, 1))}
+\DoxyCodeLine{00035     parameters = \{\textcolor{stringliteral}{"W1"}: W1,}
+\DoxyCodeLine{00036                   \textcolor{stringliteral}{"b1"}: b1,}
+\DoxyCodeLine{00037                   \textcolor{stringliteral}{"W2"}: W2,}
+\DoxyCodeLine{00038                   \textcolor{stringliteral}{"b2"}: b2\}}
+\DoxyCodeLine{00039     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00040 }
+\DoxyCodeLine{00041 }
+\DoxyCodeLine{00047 \textcolor{keyword}{def }linear(w, X, b):}
+\DoxyCodeLine{00048     z = np.dot(w.T, X) + b}
+\DoxyCodeLine{00049     \textcolor{keywordflow}{return} z}
+\DoxyCodeLine{00050 }
+\DoxyCodeLine{00051 \textcolor{comment}{\#** //things are starting to get out of control, even the size is starting to differ! i need more test cases.}}
+\DoxyCodeLine{00052 }
+\DoxyCodeLine{00061 }
+\DoxyCodeLine{00062 }
+\DoxyCodeLine{00066 \textcolor{keyword}{def }sigmoid(z):}
+\DoxyCodeLine{00067     \textcolor{keywordflow}{return} 1/(1+np.exp(-\/1*z))}
+\DoxyCodeLine{00068 }
+\DoxyCodeLine{00069 }
+\DoxyCodeLine{00074 \textcolor{keyword}{def }compute\_cost(Y, h):}
+\DoxyCodeLine{00075     m=Y.shape[1]}
+\DoxyCodeLine{00076     \textcolor{keyword}{def }compute\_loss():}
+\DoxyCodeLine{00077         L=np.dot(Y.T, np.log(h)) + np.dot((1-\/Y).T, np.log((1-\/h)))}
+\DoxyCodeLine{00078         \textcolor{keywordflow}{return} L.squeeze()}
+\DoxyCodeLine{00079     J = -\/1.0/m * compute\_loss()}
+\DoxyCodeLine{00080     \textcolor{keywordflow}{return} J}
+\DoxyCodeLine{00081 }
+\DoxyCodeLine{00082 }
+\DoxyCodeLine{00090 \textcolor{keyword}{def }update\_weight(w, dw, b, db, alpha):}
+\DoxyCodeLine{00091     w = w -\/ alpha * dw}
+\DoxyCodeLine{00092     b = b -\/ alpha * db}
+\DoxyCodeLine{00093     \textcolor{keywordflow}{return} w, b}
+\DoxyCodeLine{00094  }
+\DoxyCodeLine{00095 }
+\DoxyCodeLine{00099 \textcolor{keyword}{def }tanh\_activation(z):}
+\DoxyCodeLine{00100     \textcolor{keywordflow}{return} np.tanh(z)}
+\DoxyCodeLine{00101 }
+\DoxyCodeLine{00102 }
+\DoxyCodeLine{00103 \textcolor{comment}{\#TODO generalize this, or make a separate file for 2layer propagation.}}
+\DoxyCodeLine{00104 }
+\DoxyCodeLine{00110 \textcolor{keyword}{def }forward\_propagation(X, parameters):}
+\DoxyCodeLine{00111     W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00112     b1 = parameters[\textcolor{stringliteral}{'b1'}]}
+\DoxyCodeLine{00113     W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00114     b2 = parameters[\textcolor{stringliteral}{'b2'}]}
+\DoxyCodeLine{00115     }
+\DoxyCodeLine{00116     Z1 = linear(W1, X, b1)}
+\DoxyCodeLine{00117     A1 = tanh\_activation(Z1)}
+\DoxyCodeLine{00118     Z2 = linear(W2, A1, b2)}
+\DoxyCodeLine{00119     A2 = sigmoid(Z2)}
+\DoxyCodeLine{00120     }
+\DoxyCodeLine{00121     assert(A2.shape == (1, X.shape[1]))}
+\DoxyCodeLine{00122 }
+\DoxyCodeLine{00123     cache = \{\textcolor{stringliteral}{"Z1"}: Z1,}
+\DoxyCodeLine{00124              \textcolor{stringliteral}{"A1"}: A1,}
+\DoxyCodeLine{00125              \textcolor{stringliteral}{"Z2"}: Z2,}
+\DoxyCodeLine{00126              \textcolor{stringliteral}{"A2"}: A2\}}
+\DoxyCodeLine{00127     \textcolor{keywordflow}{return} A2, cache}
+\DoxyCodeLine{00128 }
+\DoxyCodeLine{00129 }
+\DoxyCodeLine{00134 \textcolor{keyword}{def }predict(parameters, X):}
+\DoxyCodeLine{00135     A2, cache = forward\_propagation(X, parameters)}
+\DoxyCodeLine{00136     predictions = [1 \textcolor{keywordflow}{if} e > 0.5 \textcolor{keywordflow}{else} 0 \textcolor{keywordflow}{for} e \textcolor{keywordflow}{in} np.squeeze(A2)]}
+\DoxyCodeLine{00137     }
+\DoxyCodeLine{00138     \textcolor{keywordflow}{return} np.array(predictions)}
+\DoxyCodeLine{00139 }
+\DoxyCodeLine{00140 }
+\DoxyCodeLine{00149 \textcolor{keyword}{def }single\_iteration\_propagation(w, b, X, Y):}
+\DoxyCodeLine{00150     m = X.shape[1]}
+\DoxyCodeLine{00151     z = linear(w, X, b)}
+\DoxyCodeLine{00152     h = sigmoid(z)}
+\DoxyCodeLine{00153     cost = compute\_cost(Y, h)}
+\DoxyCodeLine{00154     dw = 1.0/m * (np.dot(X, (h-\/Y).T))}
+\DoxyCodeLine{00155     db = 1.0/m * np.sum(h-\/Y)}
+\DoxyCodeLine{00156     assert(dw.shape == w.shape)}
+\DoxyCodeLine{00157     assert(db.dtype == float)}
+\DoxyCodeLine{00158     assert(cost.shape == ())}
+\DoxyCodeLine{00159     grads = \{\textcolor{stringliteral}{"dw"}: dw,}
+\DoxyCodeLine{00160              \textcolor{stringliteral}{"db"}: db\}}
+\DoxyCodeLine{00161     \textcolor{keywordflow}{return} grads, cost}
+\DoxyCodeLine{00162 }
+\DoxyCodeLine{00163 }
+\DoxyCodeLine{00164 }
+\DoxyCodeLine{00176 \textcolor{keyword}{def }gradient\_descent(w, b, X, Y, num\_iterations=1000, alpha=0.001, print\_cost = False):}
+\DoxyCodeLine{00177     costs = []}
+\DoxyCodeLine{00178     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(num\_iterations):}
+\DoxyCodeLine{00179         grads, cost = propagate(w, b, X, Y)}
+\DoxyCodeLine{00180         dw = grads[\textcolor{stringliteral}{"dw"}]}
+\DoxyCodeLine{00181         db = grads[\textcolor{stringliteral}{"db"}]}
+\DoxyCodeLine{00182         w,b = update\_weight(w, dw, b, db, alpha)}
+\DoxyCodeLine{00183         \textcolor{comment}{\# track cost}}
+\DoxyCodeLine{00184         \textcolor{keywordflow}{if} i \% 100 == 0:}
+\DoxyCodeLine{00185             costs.append(cost)}
+\DoxyCodeLine{00186         \textcolor{comment}{\# Print the cost every 100 training iterations}}
+\DoxyCodeLine{00187         \textcolor{keywordflow}{if} print\_cost \textcolor{keywordflow}{and} i \% 100 == 0:}
+\DoxyCodeLine{00188             \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Cost after iteration \%i: \%f"} \%(i, cost))}
+\DoxyCodeLine{00189     }
+\DoxyCodeLine{00190     params = \{\textcolor{stringliteral}{"w"}: w,}
+\DoxyCodeLine{00191               \textcolor{stringliteral}{"b"}: b\}}
+\DoxyCodeLine{00192     }
+\DoxyCodeLine{00193     grads = \{\textcolor{stringliteral}{"dw"}: dw,}
+\DoxyCodeLine{00194              \textcolor{stringliteral}{"db"}: db\}}
+\DoxyCodeLine{00195     }
+\DoxyCodeLine{00196     \textcolor{keywordflow}{return} params, grads, costs}
+
+\end{DoxyCode}

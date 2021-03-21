@@ -1,0 +1,385 @@
+\hypertarget{nlpc1w1_8py_source}{}\doxysection{nlpc1w1.\+py}
+\label{nlpc1w1_8py_source}\index{aipy/nlpc1w1.py@{aipy/nlpc1w1.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} nltk                       }
+\DoxyCodeLine{00002 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} twitter\_samples}
+\DoxyCodeLine{00003 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00004 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00005 }
+\DoxyCodeLine{00006 \textcolor{comment}{\# download the stopwords for the process\_tweet function}}
+\DoxyCodeLine{00007 nltk.download(\textcolor{stringliteral}{'stopwords'})}
+\DoxyCodeLine{00008 }
+\DoxyCodeLine{00009 \textcolor{comment}{\# import our convenience functions}}
+\DoxyCodeLine{00010 \textcolor{keyword}{from} utils \textcolor{keyword}{import} process\_tweet, build\_freqs}
+\DoxyCodeLine{00011 }
+\DoxyCodeLine{00012 \textcolor{comment}{\# select the lists of positive and negative tweets}}
+\DoxyCodeLine{00013 all\_positive\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'positive\_tweets.json'})}
+\DoxyCodeLine{00014 all\_negative\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'negative\_tweets.json'})}
+\DoxyCodeLine{00015 }
+\DoxyCodeLine{00016 \textcolor{comment}{\# concatenate the lists, 1st part is the positive tweets followed by the negative}}
+\DoxyCodeLine{00017 tweets = all\_positive\_tweets + all\_negative\_tweets}
+\DoxyCodeLine{00018 }
+\DoxyCodeLine{00019 \textcolor{comment}{\# let's see how many tweets we have}}
+\DoxyCodeLine{00020 print(\textcolor{stringliteral}{"Number of tweets: "}, len(tweets))}
+\DoxyCodeLine{00021 }
+\DoxyCodeLine{00022 \textcolor{comment}{\# make a numpy array representing labels of the tweets}}
+\DoxyCodeLine{00023 labels = np.append(np.ones((len(all\_positive\_tweets))), np.zeros((len(all\_negative\_tweets))))}
+\DoxyCodeLine{00024 }
+\DoxyCodeLine{00025 dictionary = \{\textcolor{stringliteral}{'key1'}: 1, \textcolor{stringliteral}{'key2'}: 2\}}
+\DoxyCodeLine{00026 \textcolor{comment}{\# Add a new entry}}
+\DoxyCodeLine{00027 dictionary[\textcolor{stringliteral}{'key3'}] = -\/5}
+\DoxyCodeLine{00028 }
+\DoxyCodeLine{00029 \textcolor{comment}{\# Overwrite the value of key1}}
+\DoxyCodeLine{00030 dictionary[\textcolor{stringliteral}{'key1'}] = 0}
+\DoxyCodeLine{00031 }
+\DoxyCodeLine{00032 print(dictionary)}
+\DoxyCodeLine{00033 }
+\DoxyCodeLine{00034 \textcolor{comment}{\# Square bracket lookup when the key exist}}
+\DoxyCodeLine{00035 print(dictionary[\textcolor{stringliteral}{'key2'}])}
+\DoxyCodeLine{00036 }
+\DoxyCodeLine{00037 \textcolor{comment}{\# The output of this line is intended to produce a KeyError}}
+\DoxyCodeLine{00038 print(dictionary[\textcolor{stringliteral}{'key8'}])}
+\DoxyCodeLine{00039 }
+\DoxyCodeLine{00040 \textcolor{comment}{\# This prints a value}}
+\DoxyCodeLine{00041 \textcolor{keywordflow}{if} \textcolor{stringliteral}{'key1'} \textcolor{keywordflow}{in} dictionary:}
+\DoxyCodeLine{00042     print(\textcolor{stringliteral}{"item found: "}, dictionary[\textcolor{stringliteral}{'key1'}])}
+\DoxyCodeLine{00043 \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00044     print(\textcolor{stringliteral}{'key1 is not defined'})}
+\DoxyCodeLine{00045 }
+\DoxyCodeLine{00046 \textcolor{comment}{\# Same as what you get with get}}
+\DoxyCodeLine{00047 print(\textcolor{stringliteral}{"item found: "}, dictionary.get(\textcolor{stringliteral}{'key1'}, -\/1))}
+\DoxyCodeLine{00048 }
+\DoxyCodeLine{00049 \textcolor{comment}{\# This prints a message because the key is not found}}
+\DoxyCodeLine{00050 \textcolor{keywordflow}{if} \textcolor{stringliteral}{'key7'} \textcolor{keywordflow}{in} dictionary:}
+\DoxyCodeLine{00051     print(dictionary[\textcolor{stringliteral}{'key7'}])}
+\DoxyCodeLine{00052 \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00053     print(\textcolor{stringliteral}{'key does not exist!'})}
+\DoxyCodeLine{00054 }
+\DoxyCodeLine{00055 \textcolor{comment}{\# This prints -\/1 because the key is not found and we set the default to -\/1}}
+\DoxyCodeLine{00056 print(dictionary.get(\textcolor{stringliteral}{'key7'}, -\/1))}
+\DoxyCodeLine{00057 }
+\DoxyCodeLine{00058 \textcolor{keyword}{def }build\_freqs(tweets, ys):}
+\DoxyCodeLine{00059     \textcolor{stringliteral}{"""Build frequencies.}}
+\DoxyCodeLine{00060 \textcolor{stringliteral}{    Input:}}
+\DoxyCodeLine{00061 \textcolor{stringliteral}{        tweets: a list of tweets}}
+\DoxyCodeLine{00062 \textcolor{stringliteral}{        ys: an m x 1 array with the sentiment label of each tweet}}
+\DoxyCodeLine{00063 \textcolor{stringliteral}{            (either 0 or 1)}}
+\DoxyCodeLine{00064 \textcolor{stringliteral}{    Output:}}
+\DoxyCodeLine{00065 \textcolor{stringliteral}{        freqs: a dictionary mapping each (word, sentiment) pair to its}}
+\DoxyCodeLine{00066 \textcolor{stringliteral}{        frequency}}
+\DoxyCodeLine{00067 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00068     \textcolor{comment}{\# Convert np array to list since zip needs an iterable.}}
+\DoxyCodeLine{00069     \textcolor{comment}{\# The squeeze is necessary or the list ends up with one element.}}
+\DoxyCodeLine{00070     \textcolor{comment}{\# Also note that this is just a NOP if ys is already a list.}}
+\DoxyCodeLine{00071     yslist = np.squeeze(ys).tolist()}
+\DoxyCodeLine{00072 }
+\DoxyCodeLine{00073     \textcolor{comment}{\# Start with an empty dictionary and populate it by looping over all tweets}}
+\DoxyCodeLine{00074     \textcolor{comment}{\# and over all processed words in each tweet.}}
+\DoxyCodeLine{00075     freqs = \{\}}
+\DoxyCodeLine{00076     \textcolor{keywordflow}{for} y, tweet \textcolor{keywordflow}{in} zip(yslist, tweets):}
+\DoxyCodeLine{00077         \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} process\_tweet(tweet):}
+\DoxyCodeLine{00078             pair = (word, y)}
+\DoxyCodeLine{00079             freqs[pair] = freqs.get(pair, 0) + 1}
+\DoxyCodeLine{00080     \textcolor{keywordflow}{return} freqs}
+\DoxyCodeLine{00081 }
+\DoxyCodeLine{00082 \textcolor{comment}{\# create frequency dictionary}}
+\DoxyCodeLine{00083 freqs = build\_freqs(tweets, labels)}
+\DoxyCodeLine{00084 }
+\DoxyCodeLine{00085 \textcolor{comment}{\# check data type}}
+\DoxyCodeLine{00086 print(f\textcolor{stringliteral}{'type(freqs) = \{type(freqs)\}'})}
+\DoxyCodeLine{00087 }
+\DoxyCodeLine{00088 \textcolor{comment}{\# check length of the dictionary}}
+\DoxyCodeLine{00089 print(f\textcolor{stringliteral}{'len(freqs) = \{len(freqs)\}'})}
+\DoxyCodeLine{00090 }
+\DoxyCodeLine{00091 }
+\DoxyCodeLine{00092 \textcolor{comment}{\# select some words to appear in the report. we will assume that each word is unique (i.e. no duplicates)}}
+\DoxyCodeLine{00093 keys = [\textcolor{stringliteral}{'happi'}, \textcolor{stringliteral}{'merri'}, \textcolor{stringliteral}{'nice'}, \textcolor{stringliteral}{'good'}, \textcolor{stringliteral}{'bad'}, \textcolor{stringliteral}{'sad'}, \textcolor{stringliteral}{'mad'}, \textcolor{stringliteral}{'best'}, \textcolor{stringliteral}{'pretti'},}
+\DoxyCodeLine{00094         \textcolor{stringliteral}{'❤'}, \textcolor{stringliteral}{':)'}, \textcolor{stringliteral}{':('}, \textcolor{stringliteral}{'😒'}, \textcolor{stringliteral}{'😬'}, \textcolor{stringliteral}{'😄'}, \textcolor{stringliteral}{'😍'}, \textcolor{stringliteral}{'♛'},}
+\DoxyCodeLine{00095         \textcolor{stringliteral}{'song'}, \textcolor{stringliteral}{'idea'}, \textcolor{stringliteral}{'power'}, \textcolor{stringliteral}{'play'}, \textcolor{stringliteral}{'magnific'}]}
+\DoxyCodeLine{00096 }
+\DoxyCodeLine{00097 \textcolor{comment}{\# list representing our table of word counts.}}
+\DoxyCodeLine{00098 \textcolor{comment}{\# each element consist of a sublist with this pattern: [<word>, <positive\_count>, <negative\_count>]}}
+\DoxyCodeLine{00099 data = []}
+\DoxyCodeLine{00100 }
+\DoxyCodeLine{00101 \textcolor{comment}{\# loop through our selected words}}
+\DoxyCodeLine{00102 \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} keys:}
+\DoxyCodeLine{00103     }
+\DoxyCodeLine{00104     \textcolor{comment}{\# initialize positive and negative counts}}
+\DoxyCodeLine{00105     pos = 0}
+\DoxyCodeLine{00106     neg = 0}
+\DoxyCodeLine{00107     }
+\DoxyCodeLine{00108     \textcolor{comment}{\# retrieve number of positive counts}}
+\DoxyCodeLine{00109     \textcolor{keywordflow}{if} (word, 1) \textcolor{keywordflow}{in} freqs:}
+\DoxyCodeLine{00110         pos = freqs[(word, 1)]}
+\DoxyCodeLine{00111         }
+\DoxyCodeLine{00112     \textcolor{comment}{\# retrieve number of negative counts}}
+\DoxyCodeLine{00113     \textcolor{keywordflow}{if} (word, 0) \textcolor{keywordflow}{in} freqs:}
+\DoxyCodeLine{00114         neg = freqs[(word, 0)]}
+\DoxyCodeLine{00115         }
+\DoxyCodeLine{00116     \textcolor{comment}{\# append the word counts to the table}}
+\DoxyCodeLine{00117     data.append([word, pos, neg])}
+\DoxyCodeLine{00118 }
+\DoxyCodeLine{00119 fig, ax = plt.subplots(figsize = (8, 8))}
+\DoxyCodeLine{00120 }
+\DoxyCodeLine{00121 \textcolor{comment}{\# convert positive raw counts to logarithmic scale. we add 1 to avoid log(0)}}
+\DoxyCodeLine{00122 x = np.log([x[1] + 1 \textcolor{keywordflow}{for} x \textcolor{keywordflow}{in} data])  }
+\DoxyCodeLine{00123 }
+\DoxyCodeLine{00124 \textcolor{comment}{\# do the same for the negative counts}}
+\DoxyCodeLine{00125 y = np.log([x[2] + 1 \textcolor{keywordflow}{for} x \textcolor{keywordflow}{in} data]) }
+\DoxyCodeLine{00126 }
+\DoxyCodeLine{00127 \textcolor{comment}{\# Plot a dot for each pair of words}}
+\DoxyCodeLine{00128 ax.scatter(x, y)  }
+\DoxyCodeLine{00129 }
+\DoxyCodeLine{00130 \textcolor{comment}{\# assign axis labels}}
+\DoxyCodeLine{00131 plt.xlabel(\textcolor{stringliteral}{"Log Positive count"})}
+\DoxyCodeLine{00132 plt.ylabel(\textcolor{stringliteral}{"Log Negative count"})}
+\DoxyCodeLine{00133 }
+\DoxyCodeLine{00134 \textcolor{comment}{\# Add the word as the label at the same position as you added the points just before}}
+\DoxyCodeLine{00135 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(0, len(data)):}
+\DoxyCodeLine{00136     ax.annotate(data[i][0], (x[i], y[i]), fontsize=12)}
+\DoxyCodeLine{00137 }
+\DoxyCodeLine{00138 ax.plot([0, 9], [0, 9], color = \textcolor{stringliteral}{'red'}) \textcolor{comment}{\# Plot the red line that divides the 2 areas.}}
+\DoxyCodeLine{00139 plt.show()}
+\DoxyCodeLine{00140 }
+\DoxyCodeLine{00141 }
+\DoxyCodeLine{00144 }
+\DoxyCodeLine{00145 \textcolor{keyword}{import} nltk                         \textcolor{comment}{\# NLP toolbox}}
+\DoxyCodeLine{00146 \textcolor{keyword}{from} os \textcolor{keyword}{import} getcwd}
+\DoxyCodeLine{00147 \textcolor{keyword}{import} pandas \textcolor{keyword}{as} pd                 \textcolor{comment}{\# Library for Dataframes }}
+\DoxyCodeLine{00148 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} twitter\_samples }
+\DoxyCodeLine{00149 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt     \textcolor{comment}{\# Library for visualization}}
+\DoxyCodeLine{00150 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np                  \textcolor{comment}{\# Library for math functions}}
+\DoxyCodeLine{00151 }
+\DoxyCodeLine{00152 \textcolor{keyword}{from} utils \textcolor{keyword}{import} process\_tweet, build\_freqs \textcolor{comment}{\# Our functions for NLP}}
+\DoxyCodeLine{00153 }
+\DoxyCodeLine{00154 }
+\DoxyCodeLine{00155 }
+\DoxyCodeLine{00156 \textcolor{comment}{\# select the set of positive and negative tweets}}
+\DoxyCodeLine{00157 all\_positive\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'positive\_tweets.json'})}
+\DoxyCodeLine{00158 all\_negative\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'negative\_tweets.json'})}
+\DoxyCodeLine{00159 }
+\DoxyCodeLine{00160 tweets = all\_positive\_tweets + all\_negative\_tweets }
+\DoxyCodeLine{00161 labels = np.append(np.ones((len(all\_positive\_tweets),1)), np.zeros((len(all\_negative\_tweets),1)), axis = 0)}
+\DoxyCodeLine{00162 }
+\DoxyCodeLine{00163 \textcolor{comment}{\# split the data into two pieces, one for training and one for testing (validation set) }}
+\DoxyCodeLine{00164 train\_pos  = all\_positive\_tweets[:4000]}
+\DoxyCodeLine{00165 train\_neg  = all\_negative\_tweets[:4000]}
+\DoxyCodeLine{00166 }
+\DoxyCodeLine{00167 train\_x = train\_pos + train\_neg }
+\DoxyCodeLine{00168 }
+\DoxyCodeLine{00169 print(\textcolor{stringliteral}{"Number of tweets: "}, len(train\_x))}
+\DoxyCodeLine{00170 }
+\DoxyCodeLine{00171 data = pd.read\_csv(\textcolor{stringliteral}{'logistic\_features.csv'}); \textcolor{comment}{\# Load a 3 columns csv file using pandas function}}
+\DoxyCodeLine{00172 }
+\DoxyCodeLine{00173 \textcolor{comment}{\# Each feature is labeled as bias, positive and negative}}
+\DoxyCodeLine{00174 X = data[[\textcolor{stringliteral}{'bias'}, \textcolor{stringliteral}{'positive'}, \textcolor{stringliteral}{'negative'}]].values \textcolor{comment}{\# Get only the numerical values of the dataframe}}
+\DoxyCodeLine{00175 Y = data[\textcolor{stringliteral}{'sentiment'}].values; \textcolor{comment}{\# Put in Y the corresponding labels or sentiments}}
+\DoxyCodeLine{00176 }
+\DoxyCodeLine{00177 print(X.shape) \textcolor{comment}{\# Print the shape of the X part}}
+\DoxyCodeLine{00178 print(X) \textcolor{comment}{\# Print some rows of X}}
+\DoxyCodeLine{00179 }
+\DoxyCodeLine{00180 theta = [7e-\/08, 0.0005239, -\/0.00055517]}
+\DoxyCodeLine{00181 }
+\DoxyCodeLine{00182 \textcolor{comment}{\# Plot the samples using columns 1 and 2 of the matrix}}
+\DoxyCodeLine{00183 fig, ax = plt.subplots(figsize = (8, 8))}
+\DoxyCodeLine{00184 }
+\DoxyCodeLine{00185 colors = [\textcolor{stringliteral}{'red'}, \textcolor{stringliteral}{'green'}]}
+\DoxyCodeLine{00186 }
+\DoxyCodeLine{00187 \textcolor{comment}{\# Color based on the sentiment Y}}
+\DoxyCodeLine{00188 ax.scatter(X[:,1], X[:,2], c=[colors[int(k)] \textcolor{keywordflow}{for} k \textcolor{keywordflow}{in} Y], s = 0.1)  \textcolor{comment}{\# Plot a dot for each pair of words}}
+\DoxyCodeLine{00189 plt.xlabel(\textcolor{stringliteral}{"Positive"})}
+\DoxyCodeLine{00190 plt.ylabel(\textcolor{stringliteral}{"Negative"})}
+\DoxyCodeLine{00191 }
+\DoxyCodeLine{00192 }
+\DoxyCodeLine{00193 \textcolor{comment}{\# Equation for the separation plane}}
+\DoxyCodeLine{00194 \textcolor{comment}{\# It give a value in the negative axe as a function of a positive value}}
+\DoxyCodeLine{00195 \textcolor{comment}{\# f(pos, neg, W) = w0 + w1 * pos + w2 * neg = 0}}
+\DoxyCodeLine{00196 \textcolor{comment}{\# s(pos, W) = (w0 -\/ w1 * pos) / w2}}
+\DoxyCodeLine{00197 \textcolor{keyword}{def }neg(theta, pos):}
+\DoxyCodeLine{00198     \textcolor{keywordflow}{return} (-\/theta[0] -\/ pos * theta[1]) / theta[2]}
+\DoxyCodeLine{00199 }
+\DoxyCodeLine{00200 \textcolor{comment}{\# Equation for the direction of the sentiments change}}
+\DoxyCodeLine{00201 \textcolor{comment}{\# We don't care about the magnitude of the change. We are only interested }}
+\DoxyCodeLine{00202 \textcolor{comment}{\# in the direction. So this direction is just a perpendicular function to the }}
+\DoxyCodeLine{00203 \textcolor{comment}{\# separation plane}}
+\DoxyCodeLine{00204 \textcolor{comment}{\# df(pos, W) = pos * w2 / w1}}
+\DoxyCodeLine{00205 \textcolor{keyword}{def }direction(theta, pos):}
+\DoxyCodeLine{00206     \textcolor{keywordflow}{return}    pos * theta[2] / theta[1]}
+\DoxyCodeLine{00207 }
+\DoxyCodeLine{00208 \textcolor{comment}{\# Plot the samples using columns 1 and 2 of the matrix}}
+\DoxyCodeLine{00209 fig, ax = plt.subplots(figsize = (8, 8))}
+\DoxyCodeLine{00210 }
+\DoxyCodeLine{00211 colors = [\textcolor{stringliteral}{'red'}, \textcolor{stringliteral}{'green'}]}
+\DoxyCodeLine{00212 }
+\DoxyCodeLine{00213 \textcolor{comment}{\# Color base on the sentiment Y}}
+\DoxyCodeLine{00214 ax.scatter(X[:,1], X[:,2], c=[colors[int(k)] \textcolor{keywordflow}{for} k \textcolor{keywordflow}{in} Y], s = 0.1)  \textcolor{comment}{\# Plot a dot for each pair of words}}
+\DoxyCodeLine{00215 plt.xlabel(\textcolor{stringliteral}{"Positive"})}
+\DoxyCodeLine{00216 plt.ylabel(\textcolor{stringliteral}{"Negative"})}
+\DoxyCodeLine{00217 }
+\DoxyCodeLine{00218 \textcolor{comment}{\# Now lets represent the logistic regression model in this chart. }}
+\DoxyCodeLine{00219 maxpos = np.max(X[:,1])}
+\DoxyCodeLine{00220 }
+\DoxyCodeLine{00221 offset = 5000 \textcolor{comment}{\# The pos value for the direction vectors origin}}
+\DoxyCodeLine{00222 }
+\DoxyCodeLine{00223 \textcolor{comment}{\# Plot a gray line that divides the 2 areas.}}
+\DoxyCodeLine{00224 ax.plot([0,  maxpos], [neg(theta, 0),   neg(theta, maxpos)], color = \textcolor{stringliteral}{'gray'}) }
+\DoxyCodeLine{00225 }
+\DoxyCodeLine{00226 \textcolor{comment}{\# Plot a green line pointing to the positive direction}}
+\DoxyCodeLine{00227 ax.arrow(offset, neg(theta, offset), offset, direction(theta, offset), head\_width=500, head\_length=500, fc=\textcolor{stringliteral}{'g'}, ec=\textcolor{stringliteral}{'g'})}
+\DoxyCodeLine{00228 \textcolor{comment}{\# Plot a red line pointing to the negative direction}}
+\DoxyCodeLine{00229 ax.arrow(offset, neg(theta, offset), -\/offset, -\/direction(theta, offset), head\_width=500, head\_length=500, fc=\textcolor{stringliteral}{'r'}, ec=\textcolor{stringliteral}{'r'})}
+\DoxyCodeLine{00230 }
+\DoxyCodeLine{00231 plt.show()}
+\DoxyCodeLine{00232 }
+\DoxyCodeLine{00233 }
+\DoxyCodeLine{00236 }
+\DoxyCodeLine{00237 \textcolor{keyword}{import} nltk                                \textcolor{comment}{\# Python library for NLP}}
+\DoxyCodeLine{00238 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} twitter\_samples    \textcolor{comment}{\# sample Twitter dataset from NLTK}}
+\DoxyCodeLine{00239 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt            \textcolor{comment}{\# library for visualization}}
+\DoxyCodeLine{00240 \textcolor{keyword}{import} random                              \textcolor{comment}{\# pseudo-\/random number generator}}
+\DoxyCodeLine{00241 }
+\DoxyCodeLine{00242 \textcolor{comment}{\# downloads sample twitter dataset. uncomment the line below if running on a local machine.}}
+\DoxyCodeLine{00243 nltk.download(\textcolor{stringliteral}{'twitter\_samples'})}
+\DoxyCodeLine{00244 }
+\DoxyCodeLine{00245 \textcolor{comment}{\# select the set of positive and negative tweets}}
+\DoxyCodeLine{00246 all\_positive\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'positive\_tweets.json'})}
+\DoxyCodeLine{00247 all\_negative\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'negative\_tweets.json'})}
+\DoxyCodeLine{00248 }
+\DoxyCodeLine{00249 \textcolor{comment}{\# Declare a figure with a custom size}}
+\DoxyCodeLine{00250 fig = plt.figure(figsize=(5, 5))}
+\DoxyCodeLine{00251 }
+\DoxyCodeLine{00252 \textcolor{comment}{\# labels for the two classes}}
+\DoxyCodeLine{00253 labels = \textcolor{stringliteral}{'Positives'}, \textcolor{stringliteral}{'Negative'}}
+\DoxyCodeLine{00254 }
+\DoxyCodeLine{00255 \textcolor{comment}{\# Sizes for each slide}}
+\DoxyCodeLine{00256 sizes = [len(all\_positive\_tweets), len(all\_negative\_tweets)] }
+\DoxyCodeLine{00257 }
+\DoxyCodeLine{00258 \textcolor{comment}{\# Declare pie chart, where the slices will be ordered and plotted counter-\/clockwise:}}
+\DoxyCodeLine{00259 plt.pie(sizes, labels=labels, autopct=\textcolor{stringliteral}{'\%1.1f\%\%'},}
+\DoxyCodeLine{00260         shadow=\textcolor{keyword}{True}, startangle=90)}
+\DoxyCodeLine{00261 }
+\DoxyCodeLine{00262 \textcolor{comment}{\# Equal aspect ratio ensures that pie is drawn as a circle.}}
+\DoxyCodeLine{00263 plt.axis(\textcolor{stringliteral}{'equal'})  }
+\DoxyCodeLine{00264 }
+\DoxyCodeLine{00265 \textcolor{comment}{\# Display the chart}}
+\DoxyCodeLine{00266 plt.show()}
+\DoxyCodeLine{00267 }
+\DoxyCodeLine{00268 }
+\DoxyCodeLine{00269 \textcolor{comment}{\# print positive in greeen}}
+\DoxyCodeLine{00270 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'} + all\_positive\_tweets[random.randint(0,5000)])}
+\DoxyCodeLine{00271 }
+\DoxyCodeLine{00272 \textcolor{comment}{\# print negative in red}}
+\DoxyCodeLine{00273 print(\textcolor{stringliteral}{'\(\backslash\)033[91m'} + all\_negative\_tweets[random.randint(0,5000)])}
+\DoxyCodeLine{00274 }
+\DoxyCodeLine{00275 \textcolor{comment}{\# Our selected sample. Complex enough to exemplify each step}}
+\DoxyCodeLine{00276 tweet = all\_positive\_tweets[2277]}
+\DoxyCodeLine{00277 print(tweet)}
+\DoxyCodeLine{00278 }
+\DoxyCodeLine{00279 \textcolor{comment}{\# download the stopwords from NLTK}}
+\DoxyCodeLine{00280 nltk.download(\textcolor{stringliteral}{'stopwords'})}
+\DoxyCodeLine{00281 }
+\DoxyCodeLine{00282 }
+\DoxyCodeLine{00283 \textcolor{keyword}{import} re                                  \textcolor{comment}{\# library for regular expression operations}}
+\DoxyCodeLine{00284 \textcolor{keyword}{import} string                              \textcolor{comment}{\# for string operations}}
+\DoxyCodeLine{00285 }
+\DoxyCodeLine{00286 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} stopwords          \textcolor{comment}{\# module for stop words that come with NLTK}}
+\DoxyCodeLine{00287 \textcolor{keyword}{from} nltk.stem \textcolor{keyword}{import} PorterStemmer        \textcolor{comment}{\# module for stemming}}
+\DoxyCodeLine{00288 \textcolor{keyword}{from} nltk.tokenize \textcolor{keyword}{import} TweetTokenizer   \textcolor{comment}{\# module for tokenizing strings}}
+\DoxyCodeLine{00289 }
+\DoxyCodeLine{00290 \textcolor{comment}{\# preprocess}}
+\DoxyCodeLine{00291 }
+\DoxyCodeLine{00292 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'} + tweet)}
+\DoxyCodeLine{00293 print(\textcolor{stringliteral}{'\(\backslash\)033[94m'})}
+\DoxyCodeLine{00294 }
+\DoxyCodeLine{00295 \textcolor{comment}{\# remove old style retweet text "RT"}}
+\DoxyCodeLine{00296 tweet2 = re.sub(\textcolor{stringliteral}{r'\string^RT[\(\backslash\)s]+'}, \textcolor{stringliteral}{''}, tweet)}
+\DoxyCodeLine{00297 }
+\DoxyCodeLine{00298 \textcolor{comment}{\# remove hyperlinks}}
+\DoxyCodeLine{00299 tweet2 = re.sub(\textcolor{stringliteral}{r'https?:\(\backslash\)/\(\backslash\)/.*[\(\backslash\)r\(\backslash\)n]*'}, \textcolor{stringliteral}{''}, tweet2)}
+\DoxyCodeLine{00300 }
+\DoxyCodeLine{00301 \textcolor{comment}{\# remove hashtags}}
+\DoxyCodeLine{00302 \textcolor{comment}{\# only removing the hash \# sign from the word}}
+\DoxyCodeLine{00303 tweet2 = re.sub(\textcolor{stringliteral}{r'\#'}, \textcolor{stringliteral}{''}, tweet2)}
+\DoxyCodeLine{00304 }
+\DoxyCodeLine{00305 print(tweet2)}
+\DoxyCodeLine{00306 }
+\DoxyCodeLine{00307 }
+\DoxyCodeLine{00308 print()}
+\DoxyCodeLine{00309 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'} + tweet2)}
+\DoxyCodeLine{00310 print(\textcolor{stringliteral}{'\(\backslash\)033[94m'})}
+\DoxyCodeLine{00311 }
+\DoxyCodeLine{00312 \textcolor{comment}{\# instantiate tokenizer class}}
+\DoxyCodeLine{00313 tokenizer = TweetTokenizer(preserve\_case=\textcolor{keyword}{False}, strip\_handles=\textcolor{keyword}{True},}
+\DoxyCodeLine{00314                                reduce\_len=\textcolor{keyword}{True})}
+\DoxyCodeLine{00315 }
+\DoxyCodeLine{00316 \textcolor{comment}{\# tokenize tweets}}
+\DoxyCodeLine{00317 tweet\_tokens = tokenizer.tokenize(tweet2)}
+\DoxyCodeLine{00318 }
+\DoxyCodeLine{00319 print()}
+\DoxyCodeLine{00320 print(\textcolor{stringliteral}{'Tokenized string:'})}
+\DoxyCodeLine{00321 print(tweet\_tokens)}
+\DoxyCodeLine{00322 }
+\DoxyCodeLine{00323 }
+\DoxyCodeLine{00324 \textcolor{comment}{\#Import the english stop words list from NLTK}}
+\DoxyCodeLine{00325 stopwords\_english = stopwords.words(\textcolor{stringliteral}{'english'}) }
+\DoxyCodeLine{00326 }
+\DoxyCodeLine{00327 print(\textcolor{stringliteral}{'Stop words\(\backslash\)n'})}
+\DoxyCodeLine{00328 print(stopwords\_english)}
+\DoxyCodeLine{00329 }
+\DoxyCodeLine{00330 print(\textcolor{stringliteral}{'\(\backslash\)nPunctuation\(\backslash\)n'})}
+\DoxyCodeLine{00331 print(string.punctuation)}
+\DoxyCodeLine{00332 }
+\DoxyCodeLine{00333 }
+\DoxyCodeLine{00334 print()}
+\DoxyCodeLine{00335 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'})}
+\DoxyCodeLine{00336 print(tweet\_tokens)}
+\DoxyCodeLine{00337 print(\textcolor{stringliteral}{'\(\backslash\)033[94m'})}
+\DoxyCodeLine{00338 }
+\DoxyCodeLine{00339 tweets\_clean = []}
+\DoxyCodeLine{00340 }
+\DoxyCodeLine{00341 \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} tweet\_tokens: \textcolor{comment}{\# Go through every word in your tokens list}}
+\DoxyCodeLine{00342     \textcolor{keywordflow}{if} (word \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} stopwords\_english \textcolor{keywordflow}{and}  \textcolor{comment}{\# remove stopwords}}
+\DoxyCodeLine{00343         word \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} string.punctuation):  \textcolor{comment}{\# remove punctuation}}
+\DoxyCodeLine{00344         tweets\_clean.append(word)}
+\DoxyCodeLine{00345 }
+\DoxyCodeLine{00346 print(\textcolor{stringliteral}{'removed stop words and punctuation:'})}
+\DoxyCodeLine{00347 print(tweets\_clean)}
+\DoxyCodeLine{00348 }
+\DoxyCodeLine{00349 print()}
+\DoxyCodeLine{00350 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'})}
+\DoxyCodeLine{00351 print(tweets\_clean)}
+\DoxyCodeLine{00352 print(\textcolor{stringliteral}{'\(\backslash\)033[94m'})}
+\DoxyCodeLine{00353 }
+\DoxyCodeLine{00354 \textcolor{comment}{\# Instantiate stemming class}}
+\DoxyCodeLine{00355 stemmer = PorterStemmer() }
+\DoxyCodeLine{00356 }
+\DoxyCodeLine{00357 \textcolor{comment}{\# Create an empty list to store the stems}}
+\DoxyCodeLine{00358 tweets\_stem = [] }
+\DoxyCodeLine{00359 }
+\DoxyCodeLine{00360 \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} tweets\_clean:}
+\DoxyCodeLine{00361     stem\_word = stemmer.stem(word)  \textcolor{comment}{\# stemming word}}
+\DoxyCodeLine{00362     tweets\_stem.append(stem\_word)  \textcolor{comment}{\# append to the list}}
+\DoxyCodeLine{00363 }
+\DoxyCodeLine{00364 print(\textcolor{stringliteral}{'stemmed words:'})}
+\DoxyCodeLine{00365 print(tweets\_stem)}
+\DoxyCodeLine{00366 }
+\DoxyCodeLine{00367 }
+\DoxyCodeLine{00368 \textcolor{keyword}{from} utils \textcolor{keyword}{import} process\_tweet \textcolor{comment}{\# Import the process\_tweet function}}
+\DoxyCodeLine{00369 }
+\DoxyCodeLine{00370 \textcolor{comment}{\# choose the same tweet}}
+\DoxyCodeLine{00371 tweet = all\_positive\_tweets[2277]}
+\DoxyCodeLine{00372 }
+\DoxyCodeLine{00373 print()}
+\DoxyCodeLine{00374 print(\textcolor{stringliteral}{'\(\backslash\)033[92m'})}
+\DoxyCodeLine{00375 print(tweet)}
+\DoxyCodeLine{00376 print(\textcolor{stringliteral}{'\(\backslash\)033[94m'})}
+\DoxyCodeLine{00377 }
+\DoxyCodeLine{00378 \textcolor{comment}{\# call the imported function}}
+\DoxyCodeLine{00379 tweets\_stem = process\_tweet(tweet); \textcolor{comment}{\# Preprocess a given tweet}}
+\DoxyCodeLine{00380 }
+\DoxyCodeLine{00381 print(\textcolor{stringliteral}{'preprocessed tweet:'})}
+\DoxyCodeLine{00382 print(tweets\_stem) \textcolor{comment}{\# Print the result}}
+\DoxyCodeLine{00383 }
+
+\end{DoxyCode}

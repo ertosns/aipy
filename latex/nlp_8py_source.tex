@@ -1,0 +1,848 @@
+\hypertarget{nlp_8py_source}{}\doxysection{nlp.\+py}
+\label{nlp_8py_source}\index{aipy/nlp.py@{aipy/nlp.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} nltk}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00003 \textcolor{keyword}{import} pandas \textcolor{keyword}{as} pd}
+\DoxyCodeLine{00004 filePath = f\textcolor{stringliteral}{"\string~/recovery-\/data/AI/NLP/course/nlp/work/tmp2/"}}
+\DoxyCodeLine{00005 nltk.data.path.append(filePath)}
+\DoxyCodeLine{00006 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} twitter\_samples, stopwords}
+\DoxyCodeLine{00007 \textcolor{keyword}{from} nlp\_utils \textcolor{keyword}{import} process\_tweet, build\_freqs}
+\DoxyCodeLine{00008 }
+\DoxyCodeLine{00009 \textcolor{keyword}{from} utils \textcolor{keyword}{import} *}
+\DoxyCodeLine{00010 }
+\DoxyCodeLine{00011 }
+\DoxyCodeLine{00012 }
+\DoxyCodeLine{00015 }
+\DoxyCodeLine{00016 \textcolor{comment}{\# select the set of positive and negative tweets}}
+\DoxyCodeLine{00017 all\_positive\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'positive\_tweets.json'})}
+\DoxyCodeLine{00018 all\_negative\_tweets = twitter\_samples.strings(\textcolor{stringliteral}{'negative\_tweets.json'})}
+\DoxyCodeLine{00019 }
+\DoxyCodeLine{00020 }
+\DoxyCodeLine{00021 \textcolor{comment}{\# split the data into two pieces, one for training and one for testing (validation set) }}
+\DoxyCodeLine{00022 test\_pos = all\_positive\_tweets[4000:]}
+\DoxyCodeLine{00023 train\_pos = all\_positive\_tweets[:4000]}
+\DoxyCodeLine{00024 test\_neg = all\_negative\_tweets[4000:]}
+\DoxyCodeLine{00025 train\_neg = all\_negative\_tweets[:4000]}
+\DoxyCodeLine{00026 }
+\DoxyCodeLine{00027 train\_x = train\_pos + train\_neg }
+\DoxyCodeLine{00028 test\_x = test\_pos + test\_neg}
+\DoxyCodeLine{00029 }
+\DoxyCodeLine{00030 \textcolor{comment}{\# combine positive and negative labels}}
+\DoxyCodeLine{00031 train\_y = np.append(np.ones((len(train\_pos), 1)), np.zeros((len(train\_neg), 1)), axis=0)}
+\DoxyCodeLine{00032 test\_y = np.append(np.ones((len(test\_pos), 1)), np.zeros((len(test\_neg), 1)), axis=0)}
+\DoxyCodeLine{00033 }
+\DoxyCodeLine{00034 \textcolor{comment}{\# Print the shape train and test sets}}
+\DoxyCodeLine{00035 print(\textcolor{stringliteral}{"train\_y.shape = "} + str(train\_y.shape))}
+\DoxyCodeLine{00036 print(\textcolor{stringliteral}{"test\_y.shape = "} + str(test\_y.shape))}
+\DoxyCodeLine{00037 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00038 \textcolor{stringliteral}{train\_y.shape = (8000, 1)}}
+\DoxyCodeLine{00039 \textcolor{stringliteral}{test\_y.shape = (2000, 1)}}
+\DoxyCodeLine{00040 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00041 }
+\DoxyCodeLine{00042 }
+\DoxyCodeLine{00045 }
+\DoxyCodeLine{00046 }
+\DoxyCodeLine{00047 \textcolor{comment}{\# create frequency dictionary}}
+\DoxyCodeLine{00048 freqs = build\_freqs(train\_x, train\_y)}
+\DoxyCodeLine{00049 }
+\DoxyCodeLine{00050 \textcolor{comment}{\# check the output}}
+\DoxyCodeLine{00051 print(\textcolor{stringliteral}{"type(freqs) = "} + str(type(freqs)))}
+\DoxyCodeLine{00052 print(\textcolor{stringliteral}{"len(freqs) = "} + str(len(freqs.keys())))}
+\DoxyCodeLine{00053 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00054 \textcolor{stringliteral}{type(freqs) = <class 'dict'>}}
+\DoxyCodeLine{00055 \textcolor{stringliteral}{len(freqs) = 11346}}
+\DoxyCodeLine{00056 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00057 }
+\DoxyCodeLine{00058 print(\textcolor{stringliteral}{'This is an example of a positive tweet: \(\backslash\)n'}, train\_x[0])}
+\DoxyCodeLine{00059 print(\textcolor{stringliteral}{'\(\backslash\)nThis is an example of the processed version of the tweet: \(\backslash\)n'}, process\_tweet(train\_x[0]))}
+\DoxyCodeLine{00060 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00061 \textcolor{stringliteral}{This is an example of a positive tweet: }}
+\DoxyCodeLine{00062 \textcolor{stringliteral}{ \#FollowFriday @France\_Inte @PKuchly57 @Milipol\_Paris for being top engaged members in my community this week :)}}
+\DoxyCodeLine{00063 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00064 \textcolor{stringliteral}{This is an example of the processes version: }}
+\DoxyCodeLine{00065 \textcolor{stringliteral}{ ['followfriday', 'top', 'engag', 'member', 'commun', 'week', ':)']}}
+\DoxyCodeLine{00066 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00067 }
+\DoxyCodeLine{00068 }
+\DoxyCodeLine{00072 \textcolor{keyword}{def }extract\_pos\_neg\_features(tweet, freqs):}
+\DoxyCodeLine{00073     \textcolor{comment}{\# process\_tweet tokenizes, stems, and removes stopwords}}
+\DoxyCodeLine{00074     word\_l = process\_tweet(tweet)}
+\DoxyCodeLine{00075     }
+\DoxyCodeLine{00076     \textcolor{comment}{\# 3 elements in the form of a 1 x 3 vector}}
+\DoxyCodeLine{00077     x = np.zeros((1, 3)) }
+\DoxyCodeLine{00078     x[0,0] = 1   \textcolor{comment}{\#bias term is set to 1}}
+\DoxyCodeLine{00079     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} word\_l:}
+\DoxyCodeLine{00080         \textcolor{comment}{\# increment the word count for the positive label 1}}
+\DoxyCodeLine{00081         x[0,1] += freqs.get((word, 1), 0)}
+\DoxyCodeLine{00082         \textcolor{comment}{\# increment the word count for the negative label 0}}
+\DoxyCodeLine{00083         x[0,2] += freqs.get((word, 0), 0)}
+\DoxyCodeLine{00084         }
+\DoxyCodeLine{00085     assert(x.shape == (1, 3))}
+\DoxyCodeLine{00086     \textcolor{keywordflow}{return} x}
+\DoxyCodeLine{00087 }
+\DoxyCodeLine{00088 tmp1 = extract\_pos\_neg\_features(train\_x[0], freqs)}
+\DoxyCodeLine{00089 print(tmp1)}
+\DoxyCodeLine{00090 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00091 \textcolor{stringliteral}{[[1.00e+00 3.02e+03 6.10e+01]]}}
+\DoxyCodeLine{00092 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00093 tmp2 = extract\_pos\_neg\_features(\textcolor{stringliteral}{'blorb bleeeeb bloooob'}, freqs)}
+\DoxyCodeLine{00094 print(tmp2)}
+\DoxyCodeLine{00095 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00096 \textcolor{stringliteral}{[[1. 0. 0.]]}}
+\DoxyCodeLine{00097 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00098 }
+\DoxyCodeLine{00099 \textcolor{comment}{\# collect the features 'x' and stack them into a matrix 'X'}}
+\DoxyCodeLine{00100 X = np.zeros((len(train\_x), 3))}
+\DoxyCodeLine{00101 \textcolor{comment}{\# X (m,3)}}
+\DoxyCodeLine{00102 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(len(train\_x)):}
+\DoxyCodeLine{00103     X[i, :]= extract\_pos\_neg\_features(train\_x[i], freqs)}
+\DoxyCodeLine{00104 \textcolor{comment}{\# training labels corresponding to X}}
+\DoxyCodeLine{00105 Y = train\_y}
+\DoxyCodeLine{00106 }
+\DoxyCodeLine{00107 \textcolor{comment}{\# Apply gradient descent}}
+\DoxyCodeLine{00108 w=np.zeros((3, 1))}
+\DoxyCodeLine{00109 b=np.zeros((3, 1))}
+\DoxyCodeLine{00110 J, theta = gradient\_descent(w, b, X, Y, 1e-\/9, 1500)}
+\DoxyCodeLine{00111 print(f\textcolor{stringliteral}{"The cost after training is \{J:.8f\}."})}
+\DoxyCodeLine{00112 print(f\textcolor{stringliteral}{"The resulting vector of weights is \{[round(t, 8) for t in np.squeeze(theta)]\}"})}
+\DoxyCodeLine{00113 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00114 \textcolor{stringliteral}{The cost after training is 0.24216529.}}
+\DoxyCodeLine{00115 \textcolor{stringliteral}{The resulting vector of weights is [7e-\/08, 0.0005239, -\/0.00055517]}}
+\DoxyCodeLine{00116 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00117 }
+\DoxyCodeLine{00118 }
+\DoxyCodeLine{00119 }
+\DoxyCodeLine{00124 \textcolor{keyword}{def }predict\_tweet(tweet, freqs, theta):}
+\DoxyCodeLine{00125     \textcolor{comment}{\# extract the features of the tweet and store it into x}}
+\DoxyCodeLine{00126     x = extract\_pos\_neg\_features(tweet, freqs)}
+\DoxyCodeLine{00127     \textcolor{comment}{\# make the prediction using x and theta}}
+\DoxyCodeLine{00128     y\_pred = sigmoid(np.dot(x, theta))}
+\DoxyCodeLine{00129     \textcolor{keywordflow}{return} y\_pred}
+\DoxyCodeLine{00130 }
+\DoxyCodeLine{00131 }
+\DoxyCodeLine{00132 }
+\DoxyCodeLine{00138 \textcolor{keyword}{def }test\_logistic\_regression(test\_x, test\_y, freqs, theta):}
+\DoxyCodeLine{00139     \textcolor{comment}{\# the list for storing predictions}}
+\DoxyCodeLine{00140     y\_hat = []}
+\DoxyCodeLine{00141     m = test\_y.shape[0]}
+\DoxyCodeLine{00142     \textcolor{keywordflow}{for} tweet \textcolor{keywordflow}{in} test\_x:}
+\DoxyCodeLine{00143         \textcolor{comment}{\# get the label prediction for the tweet}}
+\DoxyCodeLine{00144         y\_pred = predict\_tweet(tweet, freqs, theta)}
+\DoxyCodeLine{00145         }
+\DoxyCodeLine{00146         \textcolor{keywordflow}{if} y\_pred > 0.5:}
+\DoxyCodeLine{00147             \textcolor{comment}{\# append 1.0 to the list}}
+\DoxyCodeLine{00148             y\_hat+=[1]}
+\DoxyCodeLine{00149         \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00150             \textcolor{comment}{\# append 0 to the list}}
+\DoxyCodeLine{00151             y\_hat+=[0]}
+\DoxyCodeLine{00152     \textcolor{comment}{\# With the above implementation, y\_hat is a list, but test\_y is (m,1) array}}
+\DoxyCodeLine{00153     \textcolor{comment}{\# convert both to one-\/dimensional arrays in order to compare them using the '==' operator}}
+\DoxyCodeLine{00154     accuracy = np.sum((np.array(y\_hat).reshape((m,1))==test\_y))/test\_y.shape[0]}
+\DoxyCodeLine{00155     \textcolor{keywordflow}{return} accuracy}
+\DoxyCodeLine{00156 }
+\DoxyCodeLine{00157 tmp\_accuracy = test\_logistic\_regression(test\_x, test\_y, freqs, theta)}
+\DoxyCodeLine{00158 print(f\textcolor{stringliteral}{"Logistic regression model's accuracy = \{tmp\_accuracy:.4f\}"})}
+\DoxyCodeLine{00159 }
+\DoxyCodeLine{00160 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00161 \textcolor{stringliteral}{0.9950}}
+\DoxyCodeLine{00162 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00163 }
+\DoxyCodeLine{00164 }
+\DoxyCodeLine{00167 }
+\DoxyCodeLine{00168 \textcolor{keyword}{def }test\_lookup(func):}
+\DoxyCodeLine{00169     freqs = \{(\textcolor{stringliteral}{'sad'}, 0): 4,}
+\DoxyCodeLine{00170              (\textcolor{stringliteral}{'happy'}, 1): 12,}
+\DoxyCodeLine{00171              (\textcolor{stringliteral}{'oppressed'}, 0): 7\}}
+\DoxyCodeLine{00172     word = \textcolor{stringliteral}{'happy'}}
+\DoxyCodeLine{00173     label = 1}
+\DoxyCodeLine{00174     \textcolor{keywordflow}{if} func(freqs, word, label) == 12:}
+\DoxyCodeLine{00175         \textcolor{keywordflow}{return} \textcolor{stringliteral}{'SUCCESS!!'}}
+\DoxyCodeLine{00176     \textcolor{keywordflow}{return} \textcolor{stringliteral}{'Failed Sanity Check!'}}
+\DoxyCodeLine{00177 }
+\DoxyCodeLine{00178 }
+\DoxyCodeLine{00179 logprior, loglikelihood = train\_naive\_bayes(freqs, train\_x, train\_y)}
+\DoxyCodeLine{00180 print(logprior)}
+\DoxyCodeLine{00181 print(len(loglikelihood))}
+\DoxyCodeLine{00182 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00183 \textcolor{stringliteral}{0.0}}
+\DoxyCodeLine{00184 \textcolor{stringliteral}{9089}}
+\DoxyCodeLine{00185 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00186 }
+\DoxyCodeLine{00187 my\_tweet = \textcolor{stringliteral}{'She smiled.'}}
+\DoxyCodeLine{00188 p = naive\_bayes\_predict(my\_tweet, logprior, loglikelihood)}
+\DoxyCodeLine{00189 print(\textcolor{stringliteral}{'The expected output is'}, p)}
+\DoxyCodeLine{00190 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00191 \textcolor{stringliteral}{The expected output is 1.5740278623499175}}
+\DoxyCodeLine{00192 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00193 }
+\DoxyCodeLine{00194 \textcolor{keyword}{def }test\_naive\_bayes(test\_x, test\_y, logprior, loglikelihood):}
+\DoxyCodeLine{00195     accuracy = 0  \textcolor{comment}{\# return this properly}}
+\DoxyCodeLine{00196 }
+\DoxyCodeLine{00197     y\_hats = []}
+\DoxyCodeLine{00198     \textcolor{keywordflow}{for} tweet \textcolor{keywordflow}{in} test\_x:}
+\DoxyCodeLine{00199         \textcolor{comment}{\# if the prediction is > 0}}
+\DoxyCodeLine{00200         \textcolor{keywordflow}{if} naive\_bayes\_predict(tweet, logprior, loglikelihood) > 0:}
+\DoxyCodeLine{00201             \textcolor{comment}{\# the predicted class is 1}}
+\DoxyCodeLine{00202             y\_hat\_i = 1}
+\DoxyCodeLine{00203         \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00204             \textcolor{comment}{\# otherwise the predicted class is 0}}
+\DoxyCodeLine{00205             y\_hat\_i = 0}
+\DoxyCodeLine{00206         \textcolor{comment}{\# append the predicted class to the list y\_hats}}
+\DoxyCodeLine{00207         y\_hats+=[y\_hat\_i]}
+\DoxyCodeLine{00208     \textcolor{comment}{\# error is the average of the absolute values of the differences between y\_hats and test\_y}}
+\DoxyCodeLine{00209     error = \textcolor{keywordtype}{None}}
+\DoxyCodeLine{00210     \textcolor{comment}{\# Accuracy is 1 minus the error}}
+\DoxyCodeLine{00211     accuracy = sum((y\_hats==test\_y)>0)/float(len(test\_y))}
+\DoxyCodeLine{00212 }
+\DoxyCodeLine{00213     \textcolor{keywordflow}{return} accuracy}
+\DoxyCodeLine{00214 print(\textcolor{stringliteral}{"Naive Bayes accuracy = \%0.4f"} \%}
+\DoxyCodeLine{00215       (test\_naive\_bayes(test\_x, test\_y, logprior, loglikelihood)))}
+\DoxyCodeLine{00216 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00217 \textcolor{stringliteral}{0.9940}}
+\DoxyCodeLine{00218 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00219 }
+\DoxyCodeLine{00220 \textcolor{comment}{\# Run this cell to test your function}}
+\DoxyCodeLine{00221 \textcolor{keywordflow}{for} tweet \textcolor{keywordflow}{in} [\textcolor{stringliteral}{'I am happy'}, \textcolor{stringliteral}{'I am bad'}, \textcolor{stringliteral}{'this movie should have been great.'}, \textcolor{stringliteral}{'great'}, \textcolor{stringliteral}{'great great'}, \textcolor{stringliteral}{'great great great'}, \textcolor{stringliteral}{'great great great great'}]:}
+\DoxyCodeLine{00222     \textcolor{comment}{\# print( '\%s -\/> \%f' \% (tweet, naive\_bayes\_predict(tweet, logprior, loglikelihood)))}}
+\DoxyCodeLine{00223     p = naive\_bayes\_predict(tweet, logprior, loglikelihood)}
+\DoxyCodeLine{00224 \textcolor{comment}{\#     print(f'\{tweet\} -\/> \{p:.2f\} (\{p\_category\})')}}
+\DoxyCodeLine{00225     print(f\textcolor{stringliteral}{'\{tweet\} -\/> \{p:.2f\}'})}
+\DoxyCodeLine{00226 }
+\DoxyCodeLine{00227 }
+\DoxyCodeLine{00228 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00229 \textcolor{stringliteral}{    I am happy -\/> 2.15}}
+\DoxyCodeLine{00230 \textcolor{stringliteral}{    I am bad -\/> -\/1.29}}
+\DoxyCodeLine{00231 \textcolor{stringliteral}{    this movie should have been great. -\/> 2.14}}
+\DoxyCodeLine{00232 \textcolor{stringliteral}{    great -\/> 2.14}}
+\DoxyCodeLine{00233 \textcolor{stringliteral}{    great great -\/> 4.28}}
+\DoxyCodeLine{00234 \textcolor{stringliteral}{    great great great -\/> 6.41}}
+\DoxyCodeLine{00235 \textcolor{stringliteral}{    great great great great -\/> 8.55}}
+\DoxyCodeLine{00236 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00237 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00238 \textcolor{comment}{\# Feel free to check the sentiment of your own tweet below}}
+\DoxyCodeLine{00239 my\_tweet = \textcolor{stringliteral}{'you are bad :('}}
+\DoxyCodeLine{00240 naive\_bayes\_predict(my\_tweet, logprior, loglikelihood)}
+\DoxyCodeLine{00241 }
+\DoxyCodeLine{00242 get\_ratio(freqs, \textcolor{stringliteral}{'happi'})}
+\DoxyCodeLine{00243 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00244 \textcolor{stringliteral}{\{'positive': 161, 'negative': 18, 'ratio': 8.526315789473685\}}}
+\DoxyCodeLine{00245 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00246 }
+\DoxyCodeLine{00247 get\_words\_by\_threshold(freqs, label=0, threshold=0.05)}
+\DoxyCodeLine{00248 }
+\DoxyCodeLine{00249 }
+\DoxyCodeLine{00250 \textcolor{comment}{\# Some error analysis done for you}}
+\DoxyCodeLine{00251 print(\textcolor{stringliteral}{'Truth Predicted Tweet'})}
+\DoxyCodeLine{00252 \textcolor{keywordflow}{for} x, y \textcolor{keywordflow}{in} zip(test\_x, test\_y):}
+\DoxyCodeLine{00253     y\_hat = naive\_bayes\_predict(x, logprior, loglikelihood)}
+\DoxyCodeLine{00254     \textcolor{keywordflow}{if} y != (np.sign(y\_hat) > 0):}
+\DoxyCodeLine{00255         print(\textcolor{stringliteral}{'\%d\(\backslash\)t\%0.2f\(\backslash\)t\%s'} \% (y, np.sign(y\_hat) > 0, \textcolor{stringliteral}{' '}.join(}
+\DoxyCodeLine{00256             process\_tweet(x)).encode(\textcolor{stringliteral}{'ascii'}, \textcolor{stringliteral}{'ignore'})))}
+\DoxyCodeLine{00257 }
+\DoxyCodeLine{00258 \textcolor{comment}{\# Test with your own tweet -\/ feel free to modify `my\_tweet`}}
+\DoxyCodeLine{00259 my\_tweet = \textcolor{stringliteral}{'I am happy because I am learning :)'}}
+\DoxyCodeLine{00260 }
+\DoxyCodeLine{00261 p = naive\_bayes\_predict(my\_tweet, logprior, loglikelihood)}
+\DoxyCodeLine{00262 print(p)}
+\DoxyCodeLine{00263 }
+\DoxyCodeLine{00264 }
+\DoxyCodeLine{00265 }
+\DoxyCodeLine{00268 \textcolor{keyword}{import} pandas \textcolor{keyword}{as} pd}
+\DoxyCodeLine{00269 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00270 \textcolor{keyword}{import} pickle}
+\DoxyCodeLine{00271 }
+\DoxyCodeLine{00272 data = pd.read\_csv(\textcolor{stringliteral}{'\string~/recovery-\/data/AI/NLP/course/nlp/work/Week3/capitals.txt'}, delimiter=\textcolor{stringliteral}{' '})}
+\DoxyCodeLine{00273 data.columns = [\textcolor{stringliteral}{'city1'}, \textcolor{stringliteral}{'country1'}, \textcolor{stringliteral}{'city2'}, \textcolor{stringliteral}{'country2'}]}
+\DoxyCodeLine{00274 }
+\DoxyCodeLine{00275 word\_embeddings = pickle.load(open(\textcolor{stringliteral}{"\string~/recovery-\/data/AI/NLP/course/nlp/work/Week3/word\_embeddings\_subset.p"}, \textcolor{stringliteral}{"rb"}))}
+\DoxyCodeLine{00276 len(word\_embeddings)  \textcolor{comment}{\# there should be 243 words that will be used in this assignment}}
+\DoxyCodeLine{00277 }
+\DoxyCodeLine{00278 }
+\DoxyCodeLine{00283 \textcolor{keyword}{def }get\_vectors(embeddings, words):}
+\DoxyCodeLine{00284     m = len(words)}
+\DoxyCodeLine{00285     X = np.zeros((1, 300))}
+\DoxyCodeLine{00286     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} words:}
+\DoxyCodeLine{00287         english = word}
+\DoxyCodeLine{00288         eng\_emb = embeddings[english]}
+\DoxyCodeLine{00289         X = np.row\_stack((X, eng\_emb))}
+\DoxyCodeLine{00290     X = X[1:,:]}
+\DoxyCodeLine{00291     \textcolor{keywordflow}{return} X}
+\DoxyCodeLine{00292 }
+\DoxyCodeLine{00293 print(\textcolor{stringliteral}{"dimension: \{\}"}.format(word\_embeddings[\textcolor{stringliteral}{'Spain'}].shape[0]))}
+\DoxyCodeLine{00294 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00295 \textcolor{stringliteral}{300}}
+\DoxyCodeLine{00296 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00297 }
+\DoxyCodeLine{00298 }
+\DoxyCodeLine{00299 \textcolor{comment}{\# feel free to try different words}}
+\DoxyCodeLine{00300 king = word\_embeddings[\textcolor{stringliteral}{'king'}]}
+\DoxyCodeLine{00301 queen = word\_embeddings[\textcolor{stringliteral}{'queen'}]}
+\DoxyCodeLine{00302 }
+\DoxyCodeLine{00303 cosine\_similarity(king, queen)}
+\DoxyCodeLine{00304 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00305 \textcolor{stringliteral}{0.6510956}}
+\DoxyCodeLine{00306 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00307 }
+\DoxyCodeLine{00308 \textcolor{comment}{\# Test your function}}
+\DoxyCodeLine{00309 euclidean(king, queen)}
+\DoxyCodeLine{00310 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00311 \textcolor{stringliteral}{2.4796925}}
+\DoxyCodeLine{00312 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00313 }
+\DoxyCodeLine{00314 }
+\DoxyCodeLine{00321 \textcolor{keyword}{def }get\_country(city1, country1, city2, embeddings):}
+\DoxyCodeLine{00322     \textcolor{comment}{\# store the city1, country 1, and city 2 in a set called group}}
+\DoxyCodeLine{00323     group = set((city1, country1, city2))}
+\DoxyCodeLine{00324     \textcolor{comment}{\# get embeddings of city 1}}
+\DoxyCodeLine{00325     city1\_emb = embeddings[city1]}
+\DoxyCodeLine{00326     \textcolor{comment}{\# get embedding of country 1}}
+\DoxyCodeLine{00327     country1\_emb = embeddings[country1]}
+\DoxyCodeLine{00328     \textcolor{comment}{\# get embedding of city 2}}
+\DoxyCodeLine{00329     city2\_emb = embeddings[city2]}
+\DoxyCodeLine{00330     \textcolor{comment}{\# get embedding of country 2 (it's a combination of the embeddings of country 1, city 1 and city 2)}}
+\DoxyCodeLine{00331     \textcolor{comment}{\# Remember: King -\/ Man + Woman = Queen}}
+\DoxyCodeLine{00332     vec = city2\_emb -\/ city1\_emb+country1\_emb}
+\DoxyCodeLine{00333     \textcolor{comment}{\# Initialize the similarity to -\/1 (it will be replaced by a similarities that are closer to +1)}}
+\DoxyCodeLine{00334     similarity = -\/1}
+\DoxyCodeLine{00335     \textcolor{comment}{\# initialize country to an empty string}}
+\DoxyCodeLine{00336     country = \textcolor{stringliteral}{''}}
+\DoxyCodeLine{00337     \textcolor{comment}{\# loop through all words in the embeddings dictionary}}
+\DoxyCodeLine{00338     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} embeddings.keys():}
+\DoxyCodeLine{00339         \textcolor{comment}{\# first check that the word is not already in the 'group'}}
+\DoxyCodeLine{00340         \textcolor{keywordflow}{if} word \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} group:}
+\DoxyCodeLine{00341             \textcolor{comment}{\# get the word embedding}}
+\DoxyCodeLine{00342             word\_emb = embeddings[word]}
+\DoxyCodeLine{00343             \textcolor{comment}{\# calculate cosine similarity between embedding of country 2 and the word in the embeddings dictionary}}
+\DoxyCodeLine{00344             cur\_similarity = cosine\_similarity(word\_emb, vec)}
+\DoxyCodeLine{00345             \textcolor{comment}{\# if the cosine similarity is more similar than the previously best similarity...}}
+\DoxyCodeLine{00346             \textcolor{keywordflow}{if} cur\_similarity > similarity:}
+\DoxyCodeLine{00347                 \textcolor{comment}{\# update the similarity to the new, better similarity}}
+\DoxyCodeLine{00348                 similarity = cur\_similarity}
+\DoxyCodeLine{00349                 \textcolor{comment}{\# store the country as a tuple, which contains the word and the similarity}}
+\DoxyCodeLine{00350                 country = (word, similarity)}
+\DoxyCodeLine{00351     \textcolor{keywordflow}{return} country}
+\DoxyCodeLine{00352 }
+\DoxyCodeLine{00353 get\_country(\textcolor{stringliteral}{'Athens'}, \textcolor{stringliteral}{'Greece'}, \textcolor{stringliteral}{'Cairo'}, word\_embeddings)}
+\DoxyCodeLine{00354 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00355 \textcolor{stringliteral}{('Egypt', 0.7626821)}}
+\DoxyCodeLine{00356 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00357 }
+\DoxyCodeLine{00358     \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00359 \textcolor{stringliteral}{    Input:}}
+\DoxyCodeLine{00360 \textcolor{stringliteral}{        word\_embeddings: a dictionary where the key is a word and the value is its embedding}}
+\DoxyCodeLine{00361 \textcolor{stringliteral}{        data: a pandas dataframe containing all the country and capital city pairs}}
+\DoxyCodeLine{00362 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00363 \textcolor{stringliteral}{    Output:}}
+\DoxyCodeLine{00364 \textcolor{stringliteral}{        accuracy: the accuracy of the model}}
+\DoxyCodeLine{00365 \textcolor{stringliteral}{    '''}}
+\DoxyCodeLine{00366 }
+\DoxyCodeLine{00367 \textcolor{keyword}{def }get\_accuracy(word\_embeddings, data):}
+\DoxyCodeLine{00368     \textcolor{comment}{\# initialize num correct to zero}}
+\DoxyCodeLine{00369     num\_correct = 0}
+\DoxyCodeLine{00370 }
+\DoxyCodeLine{00371     \textcolor{comment}{\# loop through the rows of the dataframe}}
+\DoxyCodeLine{00372     \textcolor{keywordflow}{for} i, row \textcolor{keywordflow}{in} data.iterrows():}
+\DoxyCodeLine{00373         \textcolor{comment}{\# get city1}}
+\DoxyCodeLine{00374         city1 = row.city1}
+\DoxyCodeLine{00375 }
+\DoxyCodeLine{00376         \textcolor{comment}{\# get country1}}
+\DoxyCodeLine{00377         country1 = row.country1}
+\DoxyCodeLine{00378 }
+\DoxyCodeLine{00379         \textcolor{comment}{\# get city2}}
+\DoxyCodeLine{00380         city2 =  row.city2}
+\DoxyCodeLine{00381 }
+\DoxyCodeLine{00382         \textcolor{comment}{\# get country2}}
+\DoxyCodeLine{00383         country2 = row.country2}
+\DoxyCodeLine{00384 }
+\DoxyCodeLine{00385         \textcolor{comment}{\# use get\_country to find the predicted country2}}
+\DoxyCodeLine{00386         predicted\_country2, \_ = get\_country(city1, country1, city2, word\_embeddings)}
+\DoxyCodeLine{00387 }
+\DoxyCodeLine{00388         \textcolor{comment}{\# if the predicted country2 is the same as the actual country2...}}
+\DoxyCodeLine{00389         \textcolor{keywordflow}{if} predicted\_country2 == country2:}
+\DoxyCodeLine{00390             \textcolor{comment}{\# increment the number of correct by 1}}
+\DoxyCodeLine{00391             num\_correct += 1}
+\DoxyCodeLine{00392 }
+\DoxyCodeLine{00393     \textcolor{comment}{\# get the number of rows in the data dataframe (length of dataframe)}}
+\DoxyCodeLine{00394     m = len(data)}
+\DoxyCodeLine{00395 }
+\DoxyCodeLine{00396     \textcolor{comment}{\# calculate the accuracy by dividing the number correct by m}}
+\DoxyCodeLine{00397     accuracy = num\_correct/float(m)}
+\DoxyCodeLine{00398 }
+\DoxyCodeLine{00399     \textcolor{keywordflow}{return} accuracy}
+\DoxyCodeLine{00400 }
+\DoxyCodeLine{00401 accuracy = get\_accuracy(word\_embeddings, data)}
+\DoxyCodeLine{00402 print(f\textcolor{stringliteral}{"Accuracy is \{accuracy:.2f\}"})}
+\DoxyCodeLine{00403 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00404 \textcolor{stringliteral}{Accuracy is 0.92}}
+\DoxyCodeLine{00405 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00406 }
+\DoxyCodeLine{00407 \textcolor{comment}{\# Testing your function}}
+\DoxyCodeLine{00408 np.random.seed(1)}
+\DoxyCodeLine{00409 X = np.random.rand(3, 10)}
+\DoxyCodeLine{00410 X\_reduced = compute\_pca(X, n\_components=2)}
+\DoxyCodeLine{00411 print(\textcolor{stringliteral}{"Your original matrix was "} + str(X.shape) + \textcolor{stringliteral}{" and it became:"})}
+\DoxyCodeLine{00412 print(X\_reduced)}
+\DoxyCodeLine{00413 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00414 \textcolor{stringliteral}{Your original matrix was (3, 10) and it became:}}
+\DoxyCodeLine{00415 \textcolor{stringliteral}{[[ 0.43437323  0.49820384]}}
+\DoxyCodeLine{00416 \textcolor{stringliteral}{ [ 0.42077249 -\/0.50351448]}}
+\DoxyCodeLine{00417 \textcolor{stringliteral}{ [-\/0.85514571  0.00531064]]}}
+\DoxyCodeLine{00418 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00419 }
+\DoxyCodeLine{00420 words = [\textcolor{stringliteral}{'oil'}, \textcolor{stringliteral}{'gas'}, \textcolor{stringliteral}{'happy'}, \textcolor{stringliteral}{'sad'}, \textcolor{stringliteral}{'city'}, \textcolor{stringliteral}{'town'},}
+\DoxyCodeLine{00421          \textcolor{stringliteral}{'village'}, \textcolor{stringliteral}{'country'}, \textcolor{stringliteral}{'continent'}, \textcolor{stringliteral}{'petroleum'}, \textcolor{stringliteral}{'joyful'}]}
+\DoxyCodeLine{00422 }
+\DoxyCodeLine{00423 \textcolor{comment}{\# given a list of words and the embeddings, it returns a matrix with all the embeddings}}
+\DoxyCodeLine{00424 X = get\_vectors(word\_embeddings, words)}
+\DoxyCodeLine{00425 }
+\DoxyCodeLine{00426 print(\textcolor{stringliteral}{'You have 11 words each of 300 dimensions thus X.shape is:'}, X.shape)}
+\DoxyCodeLine{00427 }
+\DoxyCodeLine{00428 \textcolor{comment}{\# We have done the plotting for you. Just run this cell.}}
+\DoxyCodeLine{00429 result = compute\_pca(X, 2)}
+\DoxyCodeLine{00430 plt.scatter(result[:, 0], result[:, 1])}
+\DoxyCodeLine{00431 \textcolor{keywordflow}{for} i, word \textcolor{keywordflow}{in} enumerate(words):}
+\DoxyCodeLine{00432     plt.annotate(word, xy=(result[i, 0] -\/ 0.05, result[i, 1] + 0.1))}
+\DoxyCodeLine{00433 }
+\DoxyCodeLine{00434 plt.show()}
+\DoxyCodeLine{00435 }
+\DoxyCodeLine{00436 }
+\DoxyCodeLine{00437 }
+\DoxyCodeLine{00440 }
+\DoxyCodeLine{00441 \textcolor{keyword}{import} pdb}
+\DoxyCodeLine{00442 \textcolor{keyword}{import} pickle}
+\DoxyCodeLine{00443 \textcolor{keyword}{import} string}
+\DoxyCodeLine{00444 }
+\DoxyCodeLine{00445 \textcolor{keyword}{import} time}
+\DoxyCodeLine{00446 \textcolor{keyword}{import} gensim}
+\DoxyCodeLine{00447 }
+\DoxyCodeLine{00448 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00449 \textcolor{keyword}{import} nltk}
+\DoxyCodeLine{00450 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00451 \textcolor{keyword}{import} scipy}
+\DoxyCodeLine{00452 \textcolor{keyword}{import} sklearn}
+\DoxyCodeLine{00453 \textcolor{keyword}{from} gensim.models \textcolor{keyword}{import} KeyedVectors}
+\DoxyCodeLine{00454 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} stopwords, twitter\_samples}
+\DoxyCodeLine{00455 \textcolor{keyword}{from} nltk.tokenize \textcolor{keyword}{import} TweetTokenizer}
+\DoxyCodeLine{00456 }
+\DoxyCodeLine{00457 \textcolor{keyword}{from} utils \textcolor{keyword}{import} (cosine\_similarity, get\_dict,}
+\DoxyCodeLine{00458                    process\_tweet)}
+\DoxyCodeLine{00459 \textcolor{keyword}{from} os \textcolor{keyword}{import} getcwd}
+\DoxyCodeLine{00460 }
+\DoxyCodeLine{00461 }
+\DoxyCodeLine{00462 filePath = f\textcolor{stringliteral}{"\string~/recovery-\/data/AI/NLP/course/nlp/work/tmp2/"}}
+\DoxyCodeLine{00463 nltk.data.path.append(filePath)}
+\DoxyCodeLine{00464 }
+\DoxyCodeLine{00465 en\_embeddings\_subset = pickle.load(open(\textcolor{stringliteral}{"\string~/recovery-\/data/AI/NLP/course/nlp/work/Week4/en\_embeddings.p"}, \textcolor{stringliteral}{"rb"}))}
+\DoxyCodeLine{00466 fr\_embeddings\_subset = pickle.load(open(\textcolor{stringliteral}{"\string~/recovery-\/data/AI/NLP/course/nlp/work/Week4/fr\_embeddings.p"}, \textcolor{stringliteral}{"rb"}))}
+\DoxyCodeLine{00467 }
+\DoxyCodeLine{00468 ```python}
+\DoxyCodeLine{00469 \textcolor{comment}{\# Use this code to download and process the full dataset on your local computer}}
+\DoxyCodeLine{00470 }
+\DoxyCodeLine{00471 \textcolor{keyword}{from} gensim.models \textcolor{keyword}{import} KeyedVectors}
+\DoxyCodeLine{00472 }
+\DoxyCodeLine{00473 en\_embeddings = KeyedVectors.load\_word2vec\_format(\textcolor{stringliteral}{'./GoogleNews-\/vectors-\/negative300.bin'}, binary = \textcolor{keyword}{True})}
+\DoxyCodeLine{00474 fr\_embeddings = KeyedVectors.load\_word2vec\_format(\textcolor{stringliteral}{'./wiki.multi.fr.vec'})}
+\DoxyCodeLine{00475 }
+\DoxyCodeLine{00476 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00477 \textcolor{stringliteral}{\# loading the english to french dictionaries}}
+\DoxyCodeLine{00478 \textcolor{stringliteral}{en\_fr\_train = get\_dict('en-\/fr.train.txt')}}
+\DoxyCodeLine{00479 \textcolor{stringliteral}{print('The length of the english to french training dictionary is', len(en\_fr\_train))}}
+\DoxyCodeLine{00480 \textcolor{stringliteral}{en\_fr\_test = get\_dict('en-\/fr.test.txt')}}
+\DoxyCodeLine{00481 \textcolor{stringliteral}{print('The length of the english to french test dictionary is', len(en\_fr\_train))}}
+\DoxyCodeLine{00482 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00483 \textcolor{stringliteral}{english\_set = set(en\_embeddings.vocab)}}
+\DoxyCodeLine{00484 \textcolor{stringliteral}{french\_set = set(fr\_embeddings.vocab)}}
+\DoxyCodeLine{00485 \textcolor{stringliteral}{en\_embeddings\_subset = \{\}}}
+\DoxyCodeLine{00486 \textcolor{stringliteral}{fr\_embeddings\_subset = \{\}}}
+\DoxyCodeLine{00487 \textcolor{stringliteral}{french\_words = set(en\_fr\_train.values())}}
+\DoxyCodeLine{00488 \textcolor{stringliteral}{for en\_word in en\_fr\_train.keys():}}
+\DoxyCodeLine{00489 \textcolor{stringliteral}{    fr\_word = en\_fr\_train[en\_word]}}
+\DoxyCodeLine{00490 \textcolor{stringliteral}{    if fr\_word in french\_set and en\_word in english\_set:}}
+\DoxyCodeLine{00491 \textcolor{stringliteral}{        en\_embeddings\_subset[en\_word] = en\_embeddings[en\_word]}}
+\DoxyCodeLine{00492 \textcolor{stringliteral}{        fr\_embeddings\_subset[fr\_word] = fr\_embeddings[fr\_word]}}
+\DoxyCodeLine{00493 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00494 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00495 \textcolor{stringliteral}{for en\_word in en\_fr\_test.keys():}}
+\DoxyCodeLine{00496 \textcolor{stringliteral}{    fr\_word = en\_fr\_test[en\_word]}}
+\DoxyCodeLine{00497 \textcolor{stringliteral}{    if fr\_word in french\_set and en\_word in english\_set:}}
+\DoxyCodeLine{00498 \textcolor{stringliteral}{        en\_embeddings\_subset[en\_word] = en\_embeddings[en\_word]}}
+\DoxyCodeLine{00499 \textcolor{stringliteral}{        fr\_embeddings\_subset[fr\_word] = fr\_embeddings[fr\_word]}}
+\DoxyCodeLine{00500 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00501 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00502 \textcolor{stringliteral}{pickle.dump( en\_embeddings\_subset, open( "en\_embeddings.p", "wb" ) )}}
+\DoxyCodeLine{00503 \textcolor{stringliteral}{pickle.dump( fr\_embeddings\_subset, open( "fr\_embeddings.p", "wb" ) )}}
+\DoxyCodeLine{00504 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00505 }
+\DoxyCodeLine{00506 \textcolor{comment}{\# loading the english to french dictionaries}}
+\DoxyCodeLine{00507 en\_fr\_train = get\_dict(\textcolor{stringliteral}{'en-\/fr.train.txt'})}
+\DoxyCodeLine{00508 print(\textcolor{stringliteral}{'The length of the English to French training dictionary is'}, len(en\_fr\_train))}
+\DoxyCodeLine{00509 en\_fr\_test = get\_dict(\textcolor{stringliteral}{'en-\/fr.test.txt'})}
+\DoxyCodeLine{00510 print(\textcolor{stringliteral}{'The length of the English to French test dictionary is'}, len(en\_fr\_train))}
+\DoxyCodeLine{00511 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00512 \textcolor{stringliteral}{The length of the English to French training dictionary is 5000}}
+\DoxyCodeLine{00513 \textcolor{stringliteral}{The length of the English to French test dictionary is 5000}}
+\DoxyCodeLine{00514 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00515 }
+\DoxyCodeLine{00516 }
+\DoxyCodeLine{00517 }
+\DoxyCodeLine{00524 \textcolor{keyword}{def }get\_matrices(en\_fr, french\_vecs, english\_vecs):}
+\DoxyCodeLine{00525     \textcolor{comment}{\# X\_l and Y\_l are lists of the english and french word embeddings}}
+\DoxyCodeLine{00526     X\_l = list()\textcolor{comment}{\#english\_vecs.values())}}
+\DoxyCodeLine{00527     Y\_l = list()\textcolor{comment}{\#french\_vecs.values())}}
+\DoxyCodeLine{00528     english\_set = english\_vecs.keys()}
+\DoxyCodeLine{00529     french\_set = french\_vecs.keys()}
+\DoxyCodeLine{00530     \textcolor{keywordflow}{for} en\_word, fr\_word \textcolor{keywordflow}{in} en\_fr.items():}
+\DoxyCodeLine{00531         \textcolor{keywordflow}{if} fr\_word \textcolor{keywordflow}{in} french\_set \textcolor{keywordflow}{and} en\_word \textcolor{keywordflow}{in} english\_set:}
+\DoxyCodeLine{00532             en\_vec = english\_vecs[en\_word]}
+\DoxyCodeLine{00533             fr\_vec = french\_vecs[fr\_word]}
+\DoxyCodeLine{00534             X\_l.append(en\_vec)}
+\DoxyCodeLine{00535             Y\_l.append(fr\_vec)}
+\DoxyCodeLine{00536     X = np.stack(X\_l)}
+\DoxyCodeLine{00537     Y = np.stack(Y\_l)}
+\DoxyCodeLine{00538     \textcolor{keywordflow}{return} X, Y}
+\DoxyCodeLine{00539 }
+\DoxyCodeLine{00540 \textcolor{comment}{\# getting the training set:}}
+\DoxyCodeLine{00541 X\_train, Y\_train = get\_matrices(en\_fr\_train, fr\_embeddings\_subset, en\_embeddings\_subset)}
+\DoxyCodeLine{00542 }
+\DoxyCodeLine{00543 \textcolor{comment}{\# Testing your implementation.}}
+\DoxyCodeLine{00544 np.random.seed(129)}
+\DoxyCodeLine{00545 m = 10}
+\DoxyCodeLine{00546 n = 5}
+\DoxyCodeLine{00547 X = np.random.rand(m, n)}
+\DoxyCodeLine{00548 Y = np.random.rand(m, n) * .1}
+\DoxyCodeLine{00549 R = align\_embeddings(X, Y)}
+\DoxyCodeLine{00550 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00551 \textcolor{stringliteral}{loss at iteration 0 is: 3.7242}}
+\DoxyCodeLine{00552 \textcolor{stringliteral}{loss at iteration 25 is: 3.6283}}
+\DoxyCodeLine{00553 \textcolor{stringliteral}{loss at iteration 50 is: 3.5350}}
+\DoxyCodeLine{00554 \textcolor{stringliteral}{loss at iteration 75 is: 3.4442}}
+\DoxyCodeLine{00555 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00556 }
+\DoxyCodeLine{00557 R\_train = align\_embeddings(X\_train, Y\_train, train\_steps=400, learning\_rate=0.8)}
+\DoxyCodeLine{00558 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00559 \textcolor{stringliteral}{loss at iteration 0 is: 963.0146}}
+\DoxyCodeLine{00560 \textcolor{stringliteral}{loss at iteration 25 is: 97.8292}}
+\DoxyCodeLine{00561 \textcolor{stringliteral}{loss at iteration 50 is: 26.8329}}
+\DoxyCodeLine{00562 \textcolor{stringliteral}{loss at iteration 75 is: 9.7893}}
+\DoxyCodeLine{00563 \textcolor{stringliteral}{loss at iteration 100 is: 4.3776}}
+\DoxyCodeLine{00564 \textcolor{stringliteral}{loss at iteration 125 is: 2.3281}}
+\DoxyCodeLine{00565 \textcolor{stringliteral}{loss at iteration 150 is: 1.4480}}
+\DoxyCodeLine{00566 \textcolor{stringliteral}{loss at iteration 175 is: 1.0338}}
+\DoxyCodeLine{00567 \textcolor{stringliteral}{loss at iteration 200 is: 0.8251}}
+\DoxyCodeLine{00568 \textcolor{stringliteral}{loss at iteration 225 is: 0.7145}}
+\DoxyCodeLine{00569 \textcolor{stringliteral}{loss at iteration 250 is: 0.6534}}
+\DoxyCodeLine{00570 \textcolor{stringliteral}{loss at iteration 275 is: 0.6185}}
+\DoxyCodeLine{00571 \textcolor{stringliteral}{loss at iteration 300 is: 0.5981}}
+\DoxyCodeLine{00572 \textcolor{stringliteral}{loss at iteration 325 is: 0.5858}}
+\DoxyCodeLine{00573 \textcolor{stringliteral}{loss at iteration 350 is: 0.5782}}
+\DoxyCodeLine{00574 \textcolor{stringliteral}{loss at iteration 375 is: 0.5735}}
+\DoxyCodeLine{00575 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00576 }
+\DoxyCodeLine{00577 \textcolor{comment}{\# Test your implementation:}}
+\DoxyCodeLine{00578 v = np.array([1, 0, 1])}
+\DoxyCodeLine{00579 candidates = np.array([[1, 0, 5], [-\/2, 5, 3], [2, 0, 1], [6, -\/9, 5], [9, 9, 9]])}
+\DoxyCodeLine{00580 ids = nearest\_neighbor(v, candidates, 3)}
+\DoxyCodeLine{00581 print(candidates[ids])}
+\DoxyCodeLine{00582 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00583 \textcolor{stringliteral}{[[9 9 9]}}
+\DoxyCodeLine{00584 \textcolor{stringliteral}{ [1 0 5]}}
+\DoxyCodeLine{00585 \textcolor{stringliteral}{ [2 0 1]]}}
+\DoxyCodeLine{00586 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00587 }
+\DoxyCodeLine{00588 }
+\DoxyCodeLine{00593 \textcolor{keyword}{def }test\_vocabulary(X, Y, R):}
+\DoxyCodeLine{00594     \textcolor{comment}{\# The prediction is X times R}}
+\DoxyCodeLine{00595     pred = np.dot(X,R)}
+\DoxyCodeLine{00596 }
+\DoxyCodeLine{00597     \textcolor{comment}{\# initialize the number correct to zero}}
+\DoxyCodeLine{00598     num\_correct = 0}
+\DoxyCodeLine{00599 }
+\DoxyCodeLine{00600     \textcolor{comment}{\# loop through each row in pred (each transformed embedding)}}
+\DoxyCodeLine{00601     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(len(pred)):}
+\DoxyCodeLine{00602         \textcolor{comment}{\# get the index of the nearest neighbor of pred at row 'i'; also pass in the candidates in Y}}
+\DoxyCodeLine{00603         pred\_idx = nearest\_neighbor(pred[i], Y, 1)}
+\DoxyCodeLine{00604 }
+\DoxyCodeLine{00605         \textcolor{comment}{\# if the index of the nearest neighbor equals the row of i... \(\backslash\)}}
+\DoxyCodeLine{00606         \textcolor{keywordflow}{if} pred\_idx == i:}
+\DoxyCodeLine{00607             \textcolor{comment}{\# increment the number correct by 1.}}
+\DoxyCodeLine{00608             num\_correct += 1}
+\DoxyCodeLine{00609 }
+\DoxyCodeLine{00610     \textcolor{comment}{\# accuracy is the number correct divided by the number of rows in 'pred' (also number of rows in X)}}
+\DoxyCodeLine{00611     accuracy = num\_correct/float(len(pred))}
+\DoxyCodeLine{00612 }
+\DoxyCodeLine{00613     \textcolor{keywordflow}{return} accuracy}
+\DoxyCodeLine{00614 }
+\DoxyCodeLine{00615 X\_val, Y\_val = get\_matrices(en\_fr\_test, fr\_embeddings\_subset, en\_embeddings\_subset)}
+\DoxyCodeLine{00616 acc = test\_vocabulary(X\_val, Y\_val, R\_train)  \textcolor{comment}{\# this might take a minute or two}}
+\DoxyCodeLine{00617 print(f\textcolor{stringliteral}{"accuracy on test set is \{acc:.3f\}"})}
+\DoxyCodeLine{00618 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00619 \textcolor{stringliteral}{0.557}}
+\DoxyCodeLine{00620 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00621 }
+\DoxyCodeLine{00622 all\_tweets = all\_positive\_tweets + all\_negative\_tweets}
+\DoxyCodeLine{00623 }
+\DoxyCodeLine{00624 }
+\DoxyCodeLine{00625 }
+\DoxyCodeLine{00629 \textcolor{keyword}{def }get\_document\_embedding(tweet, en\_embeddings):     }
+\DoxyCodeLine{00630     doc\_embedding = np.zeros(300)}
+\DoxyCodeLine{00631 }
+\DoxyCodeLine{00632     \textcolor{comment}{\# process the document into a list of words (process the tweet)}}
+\DoxyCodeLine{00633     processed\_doc = process\_tweet(tweet)}
+\DoxyCodeLine{00634     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} processed\_doc:}
+\DoxyCodeLine{00635         \textcolor{comment}{\# add the word embedding to the running total for the document embedding}}
+\DoxyCodeLine{00636         doc\_embedding += en\_embeddings.get(word, 0)}
+\DoxyCodeLine{00637 }
+\DoxyCodeLine{00638     \textcolor{keywordflow}{return} doc\_embedding}
+\DoxyCodeLine{00639 }
+\DoxyCodeLine{00640 \textcolor{comment}{\# testing your function}}
+\DoxyCodeLine{00641 custom\_tweet = \textcolor{stringliteral}{"RT @Twitter @chapagain Hello There! Have a great day. :) \#good \#morning http://chapagain.com.np"}}
+\DoxyCodeLine{00642 tweet\_embedding = get\_document\_embedding(custom\_tweet, en\_embeddings\_subset)}
+\DoxyCodeLine{00643 tweet\_embedding[-\/5:]}
+\DoxyCodeLine{00644 }
+\DoxyCodeLine{00645 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00646 \textcolor{stringliteral}{array([-\/0.00268555, -\/0.15378189, -\/0.55761719, -\/0.07216644, -\/0.32263184])}}
+\DoxyCodeLine{00647 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00648 }
+\DoxyCodeLine{00649 }
+\DoxyCodeLine{00654 \textcolor{keyword}{def }get\_document\_vecs(all\_docs, en\_embeddings):}
+\DoxyCodeLine{00655     ind2Doc\_dict = \{\}}
+\DoxyCodeLine{00656     document\_vec\_l = []}
+\DoxyCodeLine{00657     \textcolor{keywordflow}{for} i, doc \textcolor{keywordflow}{in} enumerate(all\_docs):}
+\DoxyCodeLine{00658 }
+\DoxyCodeLine{00659         \textcolor{comment}{\# get the document embedding of the tweet}}
+\DoxyCodeLine{00660         doc\_embedding = get\_document\_embedding(doc, en\_embeddings)}
+\DoxyCodeLine{00661 }
+\DoxyCodeLine{00662         \textcolor{comment}{\# save the document embedding into the ind2Tweet dictionary at index i}}
+\DoxyCodeLine{00663         ind2Doc\_dict[i] = doc\_embedding}
+\DoxyCodeLine{00664 }
+\DoxyCodeLine{00665         \textcolor{comment}{\# append the document embedding to the list of document vectors}}
+\DoxyCodeLine{00666         document\_vec\_l.append(doc\_embedding)}
+\DoxyCodeLine{00667 }
+\DoxyCodeLine{00668     document\_vec\_matrix = np.vstack(document\_vec\_l)}
+\DoxyCodeLine{00669 }
+\DoxyCodeLine{00670     \textcolor{keywordflow}{return} document\_vec\_matrix, ind2Doc\_dict}
+\DoxyCodeLine{00671 }
+\DoxyCodeLine{00672 document\_vecs, ind2Tweet = get\_document\_vecs(all\_tweets, en\_embeddings\_subset)}
+\DoxyCodeLine{00673 }
+\DoxyCodeLine{00674 print(f\textcolor{stringliteral}{"length of dictionary \{len(ind2Tweet)\}"})}
+\DoxyCodeLine{00675 print(f\textcolor{stringliteral}{"shape of document\_vecs \{document\_vecs.shape\}"})}
+\DoxyCodeLine{00676 }
+\DoxyCodeLine{00677 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00678 \textcolor{stringliteral}{length of dictionary 10000}}
+\DoxyCodeLine{00679 \textcolor{stringliteral}{shape of document\_vecs (10000, 300)}}
+\DoxyCodeLine{00680 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00681 }
+\DoxyCodeLine{00682 my\_tweet = \textcolor{stringliteral}{'i am sad'}}
+\DoxyCodeLine{00683 process\_tweet(my\_tweet)}
+\DoxyCodeLine{00684 tweet\_embedding = get\_document\_embedding(my\_tweet, en\_embeddings\_subset)}
+\DoxyCodeLine{00685 }
+\DoxyCodeLine{00686 idx = np.argmax(cosine\_similarity(document\_vecs, tweet\_embedding))}
+\DoxyCodeLine{00687 print(all\_tweets[idx])}
+\DoxyCodeLine{00688 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00689 \textcolor{stringliteral}{@zoeeylim sad sad sad kid :( it's ok I help you watch the match HAHAHAHAHA}}
+\DoxyCodeLine{00690 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00691 }
+\DoxyCodeLine{00692 N\_VECS = len(all\_tweets)       \textcolor{comment}{\# This many vectors.}}
+\DoxyCodeLine{00693 N\_DIMS = len(ind2Tweet[1])     \textcolor{comment}{\# Vector dimensionality.}}
+\DoxyCodeLine{00694 print(f\textcolor{stringliteral}{"Number of vectors is \{N\_VECS\} and each has \{N\_DIMS\} dimensions."})}
+\DoxyCodeLine{00695 }
+\DoxyCodeLine{00696 }
+\DoxyCodeLine{00697 \textcolor{comment}{\# The number of planes. We use log2(625) to have \string~16 vectors/bucket.}}
+\DoxyCodeLine{00698 N\_PLANES = 10}
+\DoxyCodeLine{00699 \textcolor{comment}{\# Number of times to repeat the hashing to improve the search.}}
+\DoxyCodeLine{00700 N\_UNIVERSES = 25}
+\DoxyCodeLine{00701 }
+\DoxyCodeLine{00702 np.random.seed(0)}
+\DoxyCodeLine{00703 planes\_l = [np.random.normal(size=(N\_DIMS, N\_PLANES))}
+\DoxyCodeLine{00704             \textcolor{keywordflow}{for} \_ \textcolor{keywordflow}{in} range(N\_UNIVERSES)]}
+\DoxyCodeLine{00705 }
+\DoxyCodeLine{00706 }
+\DoxyCodeLine{00707 }
+\DoxyCodeLine{00708 }
+\DoxyCodeLine{00709 np.random.seed(0)}
+\DoxyCodeLine{00710 idx = 0}
+\DoxyCodeLine{00711 planes = planes\_l[idx]  \textcolor{comment}{\# get one 'universe' of planes to test the function}}
+\DoxyCodeLine{00712 vec = np.random.rand(1, 300)}
+\DoxyCodeLine{00713 print(f\textcolor{stringliteral}{" The hash value for this vector,"},}
+\DoxyCodeLine{00714       f\textcolor{stringliteral}{"and the set of planes at index \{idx\},"},}
+\DoxyCodeLine{00715       f\textcolor{stringliteral}{"is \{hash\_value\_of\_vector(vec, planes)\}"})}
+\DoxyCodeLine{00716 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00717 \textcolor{stringliteral}{ The hash value for this vector, and the set of planes at index 0, is 768}}
+\DoxyCodeLine{00718 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00719 }
+\DoxyCodeLine{00720 }
+\DoxyCodeLine{00721 np.random.seed(0)}
+\DoxyCodeLine{00722 planes = planes\_l[0]  \textcolor{comment}{\# get one 'universe' of planes to test the function}}
+\DoxyCodeLine{00723 vec = np.random.rand(1, 300)}
+\DoxyCodeLine{00724 tmp\_hash\_table, tmp\_id\_table = make\_hash\_table(document\_vecs, planes)}
+\DoxyCodeLine{00725 }
+\DoxyCodeLine{00726 print(f\textcolor{stringliteral}{"The hash table at key 0 has \{len(tmp\_hash\_table[0])\} document vectors"})}
+\DoxyCodeLine{00727 print(f\textcolor{stringliteral}{"The id table at key 0 has \{len(tmp\_id\_table[0])\}"})}
+\DoxyCodeLine{00728 print(f\textcolor{stringliteral}{"The first 5 document indices stored at key 0 of are \{tmp\_id\_table[0][0:5]\}"})}
+\DoxyCodeLine{00729 }
+\DoxyCodeLine{00730 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00731 \textcolor{stringliteral}{The hash table at key 0 has 3 document vectors}}
+\DoxyCodeLine{00732 \textcolor{stringliteral}{The id table at key 0 has 3}}
+\DoxyCodeLine{00733 \textcolor{stringliteral}{The first 5 document indices stored at key 0 of are [3276, 3281, 3282]}}
+\DoxyCodeLine{00734 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00735 }
+\DoxyCodeLine{00736 hash\_tables = []}
+\DoxyCodeLine{00737 id\_tables = []}
+\DoxyCodeLine{00738 \textcolor{keywordflow}{for} universe\_id \textcolor{keywordflow}{in} range(N\_UNIVERSES):  \textcolor{comment}{\# there are 25 hashes}}
+\DoxyCodeLine{00739     print(\textcolor{stringliteral}{'working on hash universe \#:'}, universe\_id)}
+\DoxyCodeLine{00740     planes = planes\_l[universe\_id]}
+\DoxyCodeLine{00741     hash\_table, id\_table = make\_hash\_table(document\_vecs, planes)}
+\DoxyCodeLine{00742     hash\_tables.append(hash\_table)}
+\DoxyCodeLine{00743     id\_tables.append(id\_table)}
+\DoxyCodeLine{00744 }
+\DoxyCodeLine{00745 }
+\DoxyCodeLine{00746 \textcolor{comment}{\#document\_vecs, ind2Tweet}}
+\DoxyCodeLine{00747 doc\_id = 0}
+\DoxyCodeLine{00748 doc\_to\_search = all\_tweets[doc\_id]}
+\DoxyCodeLine{00749 vec\_to\_search = document\_vecs[doc\_id]}
+\DoxyCodeLine{00750 }
+\DoxyCodeLine{00751 \textcolor{comment}{\# UNQ\_C22 (UNIQUE CELL IDENTIFIER, DO NOT EDIT)}}
+\DoxyCodeLine{00752 \textcolor{comment}{\# You do not have to input any code in this cell, but it is relevant to grading, so please do not change anything}}
+\DoxyCodeLine{00753 }
+\DoxyCodeLine{00754 \textcolor{comment}{\# Sample}}
+\DoxyCodeLine{00755 nearest\_neighbor\_ids = approximate\_knn(}
+\DoxyCodeLine{00756     doc\_id, vec\_to\_search, planes\_l, k=3, num\_universes\_to\_use=5)}
+\DoxyCodeLine{00757 }
+\DoxyCodeLine{00758 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00759 \textcolor{stringliteral}{removed doc\_id 0 of input vector from new\_ids\_to\_search}}
+\DoxyCodeLine{00760 \textcolor{stringliteral}{removed doc\_id 0 of input vector from new\_ids\_to\_search}}
+\DoxyCodeLine{00761 \textcolor{stringliteral}{removed doc\_id 0 of input vector from new\_ids\_to\_search}}
+\DoxyCodeLine{00762 \textcolor{stringliteral}{removed doc\_id 0 of input vector from new\_ids\_to\_search}}
+\DoxyCodeLine{00763 \textcolor{stringliteral}{removed doc\_id 0 of input vector from new\_ids\_to\_search}}
+\DoxyCodeLine{00764 \textcolor{stringliteral}{Fast considering 77 vecs}}
+\DoxyCodeLine{00765 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00766 }
+\DoxyCodeLine{00767 print(f\textcolor{stringliteral}{"Nearest neighbors for document \{doc\_id\}"})}
+\DoxyCodeLine{00768 print(f\textcolor{stringliteral}{"Document contents: \{doc\_to\_search\}"})}
+\DoxyCodeLine{00769 print(\textcolor{stringliteral}{""})}
+\DoxyCodeLine{00770 }
+\DoxyCodeLine{00771 \textcolor{keywordflow}{for} neighbor\_id \textcolor{keywordflow}{in} nearest\_neighbor\_ids:}
+\DoxyCodeLine{00772     print(f\textcolor{stringliteral}{"Nearest neighbor at document id \{neighbor\_id\}"})}
+\DoxyCodeLine{00773     print(f\textcolor{stringliteral}{"document contents: \{all\_tweets[neighbor\_id]\}"})}
+\DoxyCodeLine{00774 }
+\DoxyCodeLine{00775 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00776 \textcolor{stringliteral}{Nearest neighbors for document 0}}
+\DoxyCodeLine{00777 \textcolor{stringliteral}{Document contents: \#FollowFriday @France\_Inte @PKuchly57 @Milipol\_Paris for being top engaged members in my community this week :)}}
+\DoxyCodeLine{00778 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00779 \textcolor{stringliteral}{Nearest neighbor at document id 2140}}
+\DoxyCodeLine{00780 \textcolor{stringliteral}{document contents: @PopsRamjet come one, every now and then is not so bad :)}}
+\DoxyCodeLine{00781 \textcolor{stringliteral}{Nearest neighbor at document id 701}}
+\DoxyCodeLine{00782 \textcolor{stringliteral}{document contents: With the top cutie of Bohol :) https://t.co/Jh7F6U46UB}}
+\DoxyCodeLine{00783 \textcolor{stringliteral}{Nearest neighbor at document id 51}}
+\DoxyCodeLine{00784 \textcolor{stringliteral}{document contents: \#FollowFriday @France\_Espana @reglisse\_menthe @CCI\_inter for being top engaged members in my community this week :)}}
+\DoxyCodeLine{00785 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00786 }
+\DoxyCodeLine{00787 }
+\DoxyCodeLine{00790 }
+\DoxyCodeLine{00791 \textcolor{keyword}{from} collections \textcolor{keyword}{import} Counter \textcolor{comment}{\# collections library; counter: dict subclass for counting hashable objects}}
+\DoxyCodeLine{00792 }
+\DoxyCodeLine{00793 \textcolor{comment}{\# the tiny corpus of text ! }}
+\DoxyCodeLine{00794 text = \textcolor{stringliteral}{'red pink pink blue blue yellow ORANGE BLUE BLUE PINK'} \textcolor{comment}{\# 🌈}}
+\DoxyCodeLine{00795 print(text)}
+\DoxyCodeLine{00796 print(\textcolor{stringliteral}{'string length : '},len(text))}
+\DoxyCodeLine{00797 }
+\DoxyCodeLine{00798 \textcolor{comment}{\# convert all letters to lower case}}
+\DoxyCodeLine{00799 text\_lowercase = text.lower()}
+\DoxyCodeLine{00800 print(text\_lowercase)}
+\DoxyCodeLine{00801 print(\textcolor{stringliteral}{'string length : '},len(text\_lowercase))}
+\DoxyCodeLine{00802 }
+\DoxyCodeLine{00803 \textcolor{comment}{\# some regex to tokenize the string to words and return them in a list}}
+\DoxyCodeLine{00804 words = re.findall(\textcolor{stringliteral}{r'\(\backslash\)w+'}, text\_lowercase)}
+\DoxyCodeLine{00805 print(words)}
+\DoxyCodeLine{00806 print(\textcolor{stringliteral}{'count : '},len(words))}
+\DoxyCodeLine{00807 }
+\DoxyCodeLine{00808 \textcolor{comment}{\# create vocab}}
+\DoxyCodeLine{00809 vocab = set(words)}
+\DoxyCodeLine{00810 print(vocab)}
+\DoxyCodeLine{00811 print(\textcolor{stringliteral}{'count : '},len(vocab))}
+\DoxyCodeLine{00812 }
+\DoxyCodeLine{00813 }
+\DoxyCodeLine{00814 \textcolor{comment}{\# create vocab including word count}}
+\DoxyCodeLine{00815 counts\_a = dict()}
+\DoxyCodeLine{00816 \textcolor{keywordflow}{for} w \textcolor{keywordflow}{in} words:}
+\DoxyCodeLine{00817     counts\_a[w] = counts\_a.get(w,0)+1}
+\DoxyCodeLine{00818 print(counts\_a)}
+\DoxyCodeLine{00819 print(\textcolor{stringliteral}{'count : '},len(counts\_a))}
+\DoxyCodeLine{00820 }
+\DoxyCodeLine{00821 \textcolor{comment}{\# create vocab including word count using collections.Counter}}
+\DoxyCodeLine{00822 counts\_b = dict()}
+\DoxyCodeLine{00823 counts\_b = Counter(words)}
+\DoxyCodeLine{00824 print(counts\_b)}
+\DoxyCodeLine{00825 print(\textcolor{stringliteral}{'count : '},len(counts\_b))}
+\DoxyCodeLine{00826 }
+\DoxyCodeLine{00827 \textcolor{comment}{\# barchart of sorted word counts}}
+\DoxyCodeLine{00828 d = \{\textcolor{stringliteral}{'blue'}: counts\_b[\textcolor{stringliteral}{'blue'}], \textcolor{stringliteral}{'pink'}: counts\_b[\textcolor{stringliteral}{'pink'}], \textcolor{stringliteral}{'red'}: counts\_b[\textcolor{stringliteral}{'red'}], \textcolor{stringliteral}{'yellow'}: counts\_b[\textcolor{stringliteral}{'yellow'}], \textcolor{stringliteral}{'orange'}: counts\_b[\textcolor{stringliteral}{'orange'}]\}}
+\DoxyCodeLine{00829 plt.bar(range(len(d)), list(d.values()), align=\textcolor{stringliteral}{'center'}, color=d.keys())}
+\DoxyCodeLine{00830 \_ = plt.xticks(range(len(d)), list(d.keys()))}
+\DoxyCodeLine{00831 }
+\DoxyCodeLine{00832 }
+\DoxyCodeLine{00833 print(\textcolor{stringliteral}{'counts\_b : '}, counts\_b)}
+\DoxyCodeLine{00834 print(\textcolor{stringliteral}{'count : '}, len(counts\_b))}
+\DoxyCodeLine{00835 }
+\DoxyCodeLine{00836 }
+\DoxyCodeLine{00837 }
+\DoxyCodeLine{00839 word = \textcolor{stringliteral}{'dearz'} \textcolor{comment}{\# 🦌}}
+\DoxyCodeLine{00840 }
+\DoxyCodeLine{00841 \textcolor{comment}{\# splits with a loop}}
+\DoxyCodeLine{00842 splits\_a = []}
+\DoxyCodeLine{00843 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(len(word)+1):}
+\DoxyCodeLine{00844     splits\_a.append([word[:i],word[i:]])}
+\DoxyCodeLine{00845 }
+\DoxyCodeLine{00846 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} splits\_a:}
+\DoxyCodeLine{00847     print(i)}
+\DoxyCodeLine{00848 }
+\DoxyCodeLine{00849 \textcolor{comment}{\# same splits, done using a list comprehension}}
+\DoxyCodeLine{00850 splits\_b = [(word[:i], word[i:]) \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(len(word) + 1)]}
+\DoxyCodeLine{00851 }
+\DoxyCodeLine{00852 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} splits\_b:}
+\DoxyCodeLine{00853     print(i)}
+\DoxyCodeLine{00854 }
+\DoxyCodeLine{00855 \textcolor{comment}{\# deletes with a loop}}
+\DoxyCodeLine{00856 splits = splits\_a}
+\DoxyCodeLine{00857 deletes = []}
+\DoxyCodeLine{00858 }
+\DoxyCodeLine{00859 print(\textcolor{stringliteral}{'word : '}, word)}
+\DoxyCodeLine{00860 \textcolor{keywordflow}{for} L,R \textcolor{keywordflow}{in} splits:}
+\DoxyCodeLine{00861     \textcolor{keywordflow}{if} R:}
+\DoxyCodeLine{00862         print(L + R[1:], \textcolor{stringliteral}{' <-\/-\/ delete '}, R[0])}
+\DoxyCodeLine{00863 }
+\DoxyCodeLine{00864 \textcolor{comment}{\# breaking it down}}
+\DoxyCodeLine{00865 print(\textcolor{stringliteral}{'word : '}, word)}
+\DoxyCodeLine{00866 one\_split = splits[0]}
+\DoxyCodeLine{00867 print(\textcolor{stringliteral}{'first item from the splits list : '}, one\_split)}
+\DoxyCodeLine{00868 L = one\_split[0]}
+\DoxyCodeLine{00869 R = one\_split[1]}
+\DoxyCodeLine{00870 print(\textcolor{stringliteral}{'L : '}, L)}
+\DoxyCodeLine{00871 print(\textcolor{stringliteral}{'R : '}, R)}
+\DoxyCodeLine{00872 print(\textcolor{stringliteral}{'*** now implicit delete by excluding the leading letter ***'})}
+\DoxyCodeLine{00873 print(\textcolor{stringliteral}{'L + R[1:] : '},L + R[1:], \textcolor{stringliteral}{' <-\/-\/ delete '}, R[0])}
+\DoxyCodeLine{00874 }
+\DoxyCodeLine{00875 }
+\DoxyCodeLine{00876 \textcolor{comment}{\# deletes with a list comprehension}}
+\DoxyCodeLine{00877 splits = splits\_a}
+\DoxyCodeLine{00878 deletes = [L + R[1:] \textcolor{keywordflow}{for} L, R \textcolor{keywordflow}{in} splits \textcolor{keywordflow}{if} R]}
+\DoxyCodeLine{00879 }
+\DoxyCodeLine{00880 print(deletes)}
+\DoxyCodeLine{00881 print(\textcolor{stringliteral}{'*** which is the same as ***'})}
+\DoxyCodeLine{00882 \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} deletes:}
+\DoxyCodeLine{00883     print(i)}
+\DoxyCodeLine{00884 }
+\DoxyCodeLine{00885 vocab = [\textcolor{stringliteral}{'dean'},\textcolor{stringliteral}{'deer'},\textcolor{stringliteral}{'dear'},\textcolor{stringliteral}{'fries'},\textcolor{stringliteral}{'and'},\textcolor{stringliteral}{'coke'}]}
+\DoxyCodeLine{00886 edits = list(deletes)}
+\DoxyCodeLine{00887 }
+\DoxyCodeLine{00888 print(\textcolor{stringliteral}{'vocab : '}, vocab)}
+\DoxyCodeLine{00889 print(\textcolor{stringliteral}{'edits : '}, edits)}
+\DoxyCodeLine{00890 }
+\DoxyCodeLine{00891 candidates=[]}
+\DoxyCodeLine{00892 candidates = set(vocab).intersection(edits)}
+\DoxyCodeLine{00893 }
+\DoxyCodeLine{00894 print(\textcolor{stringliteral}{'candidate words : '}, candidates)}
+
+\end{DoxyCode}

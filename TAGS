@@ -1,0 +1,82 @@
+
+aipy/aic1w1.py,19
+def model(56,1877
+
+aipy/aic1w3.py,164
+def layer_sizes(44,1236
+def compute_cost(98,2888
+def backward_propagation(141,4360
+def update_parameters(204,6424
+def nn_model(264,8240
+def predict(332,10492
+
+aipy/aipy.py,58
+def L_model_forward(14,496
+def L_model_backward(33,1503
+
+aipy/core.py,137
+class Logistic_regression(4,45
+    def __init__(8,123
+    def gradient_descent(25,663
+    def predict(30,869
+    def predict(32,899
+
+aipy/lr_utils.py,23
+def load_dataset(5,41
+
+aipy/nlpc1w1.py,67
+def build_freqs(58,1629
+def neg(197,6197
+def direction(205,6526
+
+aipy/utils.py,811
+def initialize_with_zeros(13,361
+def linear(24,597
+def sigmoid(33,767
+def deep_sigmoid(41,1013
+def compute_cost(51,1266
+    def compute_loss(53,1307
+def deep_compute_cost(65,1776
+def derive_weight(84,2418
+def update_weight(98,2813
+def update_parameters(108,3148
+def propagate(129,4071
+def gradient_descent(154,5174
+def predict(182,6126
+def relu(200,6757
+def relu_backward(211,7109
+def sigmoid_backward(225,7610
+def initialize_parameters(242,8216
+def linear_forward(265,9251
+def forward_propagation(276,9602
+def deep_initialization(307,10491
+def deep_linear(324,10993
+def deep_activation(332,11147
+def deep_linear_activation_forward(343,11877
+def deep_linear_backward(366,13122
+def deep_linear_activation_backward(388,14133
+def L_model_forward(404,14960
+def L_model_backward(423,15995
+
+aipy/utils_test.py,413
+class Utils_Test(5,56
+    def test_sigmoid(6,93
+    def test_initialize_with_zeros(12,271
+    def test_initialization(20,570
+    def test_propagate(55,2227
+    def test_linear_forward(66,2677
+    def test_linear_activation_forward(81,3207
+    def test_L_model_forward(91,3749
+    def test_linear_backward(106,4309
+    def test_linear_activation_backward(130,5462
+    def test_L_model_backward(156,6739
+
+aipy/__main__.py,0
+
+aipy/__init__.py,0
+
+aipy/aiw1_test.py,0
+
+aipy/aic1w4_test.py,0
+
+aipy/aic1w4.py,0

@@ -1,0 +1,268 @@
+\hypertarget{utils_8py_source}{}\doxysection{utils.\+py}
+\label{utils_8py_source}\index{aipy/utils.py@{aipy/utils.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00001}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils}{00001}} \textcolor{stringliteral}{"""@package aipy}}
+\DoxyCodeLine{00002 \textcolor{stringliteral}{}}
+\DoxyCodeLine{00003 \textcolor{stringliteral}{this is utility file for aipy library}}
+\DoxyCodeLine{00004 \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00005 }
+\DoxyCodeLine{00006 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00007 }
+\DoxyCodeLine{00008 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00013}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_adc552a252a7228b685a589a2778c9229}{00013}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_adc552a252a7228b685a589a2778c9229}{initialize\_with\_zeros}}(dim):}
+\DoxyCodeLine{00014     w = np.zeros((dim, 1))}
+\DoxyCodeLine{00015     b = 0}
+\DoxyCodeLine{00016     \textcolor{keywordflow}{return} w, b}
+\DoxyCodeLine{00017 }
+\DoxyCodeLine{00018 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00024}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aa064d8aa342cee14bd78510b0e607860}{00024}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aa064d8aa342cee14bd78510b0e607860}{linear}}(w, X, b):}
+\DoxyCodeLine{00025     z = np.dot(w.T, X) + b}
+\DoxyCodeLine{00026     \textcolor{keywordflow}{return} z}
+\DoxyCodeLine{00027 }
+\DoxyCodeLine{00028 }
+\DoxyCodeLine{00029 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00033}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ab953b6a76b3d91de0f6b42d9d6d8b58b}{00033}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ab953b6a76b3d91de0f6b42d9d6d8b58b}{sigmoid}}(z):}
+\DoxyCodeLine{00034     \textcolor{keywordflow}{return} 1/(1+np.exp(-\/1*z))}
+\DoxyCodeLine{00035 }
+\DoxyCodeLine{00036 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00041}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a21734b28fb87a0c8494e865442d9b4ec}{00041}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a21734b28fb87a0c8494e865442d9b4ec}{deep\_sigmoid}}(Z):}
+\DoxyCodeLine{00042     A = 1/(1+np.exp(-\/Z))}
+\DoxyCodeLine{00043     cache = Z}
+\DoxyCodeLine{00044     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00045 }
+\DoxyCodeLine{00046 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00051}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a069feeb21ef242f65007f62e77509639}{00051}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a069feeb21ef242f65007f62e77509639}{compute\_cost}}(Y, h):}
+\DoxyCodeLine{00052     m=Y.shape[1]}
+\DoxyCodeLine{00053     \textcolor{keyword}{def }compute\_loss():}
+\DoxyCodeLine{00054         L=np.dot(Y.T, np.log(h)) + np.dot((1-\/Y).T, np.log((1-\/h)))}
+\DoxyCodeLine{00055         \textcolor{keywordflow}{return} L.squeeze()}
+\DoxyCodeLine{00056     J = -\/1.0/m * compute\_loss()}
+\DoxyCodeLine{00057     \textcolor{keywordflow}{return} J}
+\DoxyCodeLine{00058 }
+\DoxyCodeLine{00059 }
+\DoxyCodeLine{00060 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00065}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac1d2386f78b74fda92f3eedb0690688d}{00065}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac1d2386f78b74fda92f3eedb0690688d}{deep\_compute\_cost}}(AL, Y):}
+\DoxyCodeLine{00066     m = Y.shape[1]}
+\DoxyCodeLine{00067     \textcolor{comment}{\# Compute loss from aL and y.}}
+\DoxyCodeLine{00068     cost = -\/1.0/m * np.sum(np.multiply(Y, np.log(AL)) + \(\backslash\)}
+\DoxyCodeLine{00069                            np.multiply((1-\/Y), np.log(1-\/AL)))}
+\DoxyCodeLine{00070     \textcolor{comment}{\# To make sure your cost's shape is what we expect}}
+\DoxyCodeLine{00071     \textcolor{comment}{\# (e.g. this turns [[17]] into 17).}}
+\DoxyCodeLine{00072     cost = cost.squeeze()}
+\DoxyCodeLine{00073     assert(cost.shape == ())}
+\DoxyCodeLine{00074     }
+\DoxyCodeLine{00075     \textcolor{keywordflow}{return} cost}
+\DoxyCodeLine{00076 }
+\DoxyCodeLine{00077 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00084}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a87e9e817af292c366226f644168454a7}{00084}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a87e9e817af292c366226f644168454a7}{derive\_weight}}(X, Y, h):    }
+\DoxyCodeLine{00085     m=len(X[0])}
+\DoxyCodeLine{00086     dw = 1.0/m * (np.dot(X, (h-\/Y).T))}
+\DoxyCodeLine{00087     db = 1.0/m * np.sum(h-\/Y)}
+\DoxyCodeLine{00088     \textcolor{keywordflow}{return} dw, db}
+\DoxyCodeLine{00089 }
+\DoxyCodeLine{00090 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00098}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a757ce3a23c10fbc489f586d772381d68}{00098}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a757ce3a23c10fbc489f586d772381d68}{update\_weight}}(w, dw, b, db, alpha):}
+\DoxyCodeLine{00099     w = w -\/ alpha * dw}
+\DoxyCodeLine{00100     b = b -\/ alpha * db}
+\DoxyCodeLine{00101     \textcolor{keywordflow}{return} w, b}
+\DoxyCodeLine{00102  }
+\DoxyCodeLine{00103 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00108}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_af4b8d65cdcdd5476f1fd2c871464c391}{00108}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_af4b8d65cdcdd5476f1fd2c871464c391}{update\_parameters}}(parameters, grads, learning\_rate):}
+\DoxyCodeLine{00109     L = len(parameters) // 2 }
+\DoxyCodeLine{00110     \textcolor{comment}{\# Update rule for each parameter. Use a for loop.}}
+\DoxyCodeLine{00111     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} range(L):}
+\DoxyCodeLine{00112         w=parameters[\textcolor{stringliteral}{"W"} + str(l+1)]}
+\DoxyCodeLine{00113         b=parameters[\textcolor{stringliteral}{"b"} + str(l+1)]}
+\DoxyCodeLine{00114         dw=learning\_rate*grads[\textcolor{stringliteral}{'dW'}+str(l+1)]}
+\DoxyCodeLine{00115         db=learning\_rate*grads[\textcolor{stringliteral}{'db'}+str(l+1)]}
+\DoxyCodeLine{00116         parameters[\textcolor{stringliteral}{"W"} + str(l+1)], parameters[\textcolor{stringliteral}{"b"} + str(l+1)]=\(\backslash\)}
+\DoxyCodeLine{00117             \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a757ce3a23c10fbc489f586d772381d68}{update\_weight}}(w, dw, b, db, learning\_rate)}
+\DoxyCodeLine{00118     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00119 }
+\DoxyCodeLine{00120 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00129}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a58e2fccbc2a5b25f8f30607629ed38ae}{00129}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a58e2fccbc2a5b25f8f30607629ed38ae}{propagate}}(w, b, X, Y):}
+\DoxyCodeLine{00130     m = X.shape[1]}
+\DoxyCodeLine{00131     z = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aa064d8aa342cee14bd78510b0e607860}{linear}}(w, X, b)}
+\DoxyCodeLine{00132     h = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ab953b6a76b3d91de0f6b42d9d6d8b58b}{sigmoid}}(z)}
+\DoxyCodeLine{00133     cost = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac1d2386f78b74fda92f3eedb0690688d}{deep\_compute\_cost}}(Y, h)}
+\DoxyCodeLine{00134     dw, db = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a87e9e817af292c366226f644168454a7}{derive\_weight}}(X, Y, h)}
+\DoxyCodeLine{00135     assert(dw.shape == w.shape)}
+\DoxyCodeLine{00136     assert(db.dtype == float)}
+\DoxyCodeLine{00137     assert(cost.shape == ())}
+\DoxyCodeLine{00138     grads = \{\textcolor{stringliteral}{"dw"}: dw,}
+\DoxyCodeLine{00139              \textcolor{stringliteral}{"db"}: db\}}
+\DoxyCodeLine{00140     \textcolor{keywordflow}{return} grads, cost}
+\DoxyCodeLine{00141 }
+\DoxyCodeLine{00142 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00154}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a96dbd24dcc5f813264a1bc91be208946}{00154}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a96dbd24dcc5f813264a1bc91be208946}{gradient\_descent}}(w, b, X, Y, num\_iterations=1000, alpha=0.001, print\_cost = False):}
+\DoxyCodeLine{00155     costs = []}
+\DoxyCodeLine{00156     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(num\_iterations):}
+\DoxyCodeLine{00157         grads, cost = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a58e2fccbc2a5b25f8f30607629ed38ae}{propagate}}(w, b, X, Y)}
+\DoxyCodeLine{00158         dw = grads[\textcolor{stringliteral}{"dw"}]}
+\DoxyCodeLine{00159         db = grads[\textcolor{stringliteral}{"db"}]}
+\DoxyCodeLine{00160         w,b = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a757ce3a23c10fbc489f586d772381d68}{update\_weight}}(w, dw, b, db, alpha)}
+\DoxyCodeLine{00161         \textcolor{comment}{\# track cost}}
+\DoxyCodeLine{00162         \textcolor{keywordflow}{if} i \% 100 == 0:}
+\DoxyCodeLine{00163             costs.append(cost)}
+\DoxyCodeLine{00164         \textcolor{comment}{\# Print the cost every 100 training iterations}}
+\DoxyCodeLine{00165         \textcolor{keywordflow}{if} print\_cost \textcolor{keywordflow}{and} i \% 100 == 0:}
+\DoxyCodeLine{00166             \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Cost after iteration \%i: \%f"} \%(i, cost))}
+\DoxyCodeLine{00167     }
+\DoxyCodeLine{00168     params = \{\textcolor{stringliteral}{"w"}: w,}
+\DoxyCodeLine{00169               \textcolor{stringliteral}{"b"}: b\}}
+\DoxyCodeLine{00170     }
+\DoxyCodeLine{00171     grads = \{\textcolor{stringliteral}{"dw"}: dw,}
+\DoxyCodeLine{00172              \textcolor{stringliteral}{"db"}: db\}}
+\DoxyCodeLine{00173     }
+\DoxyCodeLine{00174     \textcolor{keywordflow}{return} params, grads, costs}
+\DoxyCodeLine{00175 }
+\DoxyCodeLine{00176 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00182}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a88d9dbe6880b5c7ce1978a290b21b0db}{00182}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a88d9dbe6880b5c7ce1978a290b21b0db}{predict}}(w, b, X):}
+\DoxyCodeLine{00183     m = X.shape[1]}
+\DoxyCodeLine{00184     Y\_prediction = np.zeros((1,m))}
+\DoxyCodeLine{00185     w = w.reshape(X.shape[0], 1)}
+\DoxyCodeLine{00186     Z = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aa064d8aa342cee14bd78510b0e607860}{linear}}(w, X, b)}
+\DoxyCodeLine{00187     A = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ab953b6a76b3d91de0f6b42d9d6d8b58b}{sigmoid}}(Z)}
+\DoxyCodeLine{00188     \textcolor{comment}{\#TODO replace this with pandas apply function}}
+\DoxyCodeLine{00189     \textcolor{comment}{\#RELU-\/like activation}}
+\DoxyCodeLine{00190     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(A.shape[1]):}
+\DoxyCodeLine{00191         Y\_prediction[0][i] = 1 \textcolor{keywordflow}{if} A[0][i]>0.5 \textcolor{keywordflow}{else} 0}
+\DoxyCodeLine{00192     assert(Y\_prediction.shape == (1, m))}
+\DoxyCodeLine{00193     \textcolor{keywordflow}{return} Y\_prediction}
+\DoxyCodeLine{00194 }
+\DoxyCodeLine{00195 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00200}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a314bb57a2c296337ea2f273c46f4e7e7}{00200}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a314bb57a2c296337ea2f273c46f4e7e7}{relu}}(Z):}
+\DoxyCodeLine{00201     A = np.maximum(0,Z)}
+\DoxyCodeLine{00202     assert(A.shape == Z.shape)}
+\DoxyCodeLine{00203     cache = Z }
+\DoxyCodeLine{00204     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00205 }
+\DoxyCodeLine{00206 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00211}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae93689ee55421e957e55192016219da0}{00211}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae93689ee55421e957e55192016219da0}{relu\_backward}}(dA, cache):   }
+\DoxyCodeLine{00212     Z = cache}
+\DoxyCodeLine{00213     \textcolor{comment}{\# just converting dz to a correct object.}}
+\DoxyCodeLine{00214     dZ = np.array(dA, copy=\textcolor{keyword}{True}) }
+\DoxyCodeLine{00215     \textcolor{comment}{\# When z < 0, you should set dz to 0 as well. }}
+\DoxyCodeLine{00216     dZ[Z <= 0] = 0    }
+\DoxyCodeLine{00217     \textcolor{keyword}{assert} (dZ.shape == Z.shape)}
+\DoxyCodeLine{00218     \textcolor{keywordflow}{return} dZ}
+\DoxyCodeLine{00219 }
+\DoxyCodeLine{00220 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00225}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aec2b9988afa351577eb52f731029fc89}{00225}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aec2b9988afa351577eb52f731029fc89}{sigmoid\_backward}}(dA, cache):}
+\DoxyCodeLine{00226     Z = cache    }
+\DoxyCodeLine{00227     s = 1/(1+np.exp(-\/Z))}
+\DoxyCodeLine{00228     dZ = dA * s * (1-\/s)}
+\DoxyCodeLine{00229     \textcolor{keyword}{assert} (dZ.shape == Z.shape)}
+\DoxyCodeLine{00230     \textcolor{keywordflow}{return} dZ}
+\DoxyCodeLine{00231 }
+\DoxyCodeLine{00232 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00242}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac5ddc42640b585e150188f5afba6dfe7}{00242}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac5ddc42640b585e150188f5afba6dfe7}{initialize\_parameters}}(n\_x, n\_h, n\_y):}
+\DoxyCodeLine{00243     np.random.seed(2) }
+\DoxyCodeLine{00244     W1 = np.random.random((n\_h, n\_x))*0.01}
+\DoxyCodeLine{00245     b1 = np.zeros((n\_h, 1))*0.01}
+\DoxyCodeLine{00246     W2 = np.random.randn(n\_y, n\_h)*0.01}
+\DoxyCodeLine{00247     b2 = np.zeros((n\_y, 1))*0.01    }
+\DoxyCodeLine{00248     \textcolor{keyword}{assert} (W1.shape == (n\_h, n\_x))}
+\DoxyCodeLine{00249     \textcolor{keyword}{assert} (b1.shape == (n\_h, 1))}
+\DoxyCodeLine{00250     \textcolor{keyword}{assert} (W2.shape == (n\_y, n\_h))}
+\DoxyCodeLine{00251     \textcolor{keyword}{assert} (b2.shape == (n\_y, 1))}
+\DoxyCodeLine{00252     parameters = \{\textcolor{stringliteral}{"W1"}: W1,}
+\DoxyCodeLine{00253                   \textcolor{stringliteral}{"b1"}: b1,}
+\DoxyCodeLine{00254                   \textcolor{stringliteral}{"W2"}: W2,}
+\DoxyCodeLine{00255                   \textcolor{stringliteral}{"b2"}: b2\}}
+\DoxyCodeLine{00256     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00257 }
+\DoxyCodeLine{00258 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00265}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_afbac86750318632038fd04f8ad723177}{00265}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_afbac86750318632038fd04f8ad723177}{linear\_forward}}(A, W, b):}
+\DoxyCodeLine{00266     Z = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_abd0b296a51a42b8841de2e0ec584e21c}{deep\_linear}}(W, A, b)    }
+\DoxyCodeLine{00267     cache = (A, W, b)}
+\DoxyCodeLine{00268     \textcolor{keywordflow}{return} Z, cache}
+\DoxyCodeLine{00269 }
+\DoxyCodeLine{00270 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00276}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a08062c4331864f05b91e3e6c385996a5}{00276}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a08062c4331864f05b91e3e6c385996a5}{forward\_propagation}}(X, parameters):}
+\DoxyCodeLine{00277     W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00278     b1 = parameters[\textcolor{stringliteral}{'b1'}]}
+\DoxyCodeLine{00279     W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00280     b2 = parameters[\textcolor{stringliteral}{'b2'}]}
+\DoxyCodeLine{00281     }
+\DoxyCodeLine{00282     Z1 = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_abd0b296a51a42b8841de2e0ec584e21c}{deep\_linear}}(W1, X, b1)}
+\DoxyCodeLine{00283     A1 = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae772d750fa98fd997ee0f20e2e255f72}{deep\_activation}}(Z1)}
+\DoxyCodeLine{00284     Z2 = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_abd0b296a51a42b8841de2e0ec584e21c}{deep\_linear}}(W2, A1, b2)}
+\DoxyCodeLine{00285     A2 = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ab953b6a76b3d91de0f6b42d9d6d8b58b}{sigmoid}}(Z2)}
+\DoxyCodeLine{00286     }
+\DoxyCodeLine{00287     assert(A2.shape == (1, X.shape[1]))}
+\DoxyCodeLine{00288 }
+\DoxyCodeLine{00289     cache = \{\textcolor{stringliteral}{"Z1"}: Z1,}
+\DoxyCodeLine{00290              \textcolor{stringliteral}{"A1"}: A1,}
+\DoxyCodeLine{00291              \textcolor{stringliteral}{"Z2"}: Z2,}
+\DoxyCodeLine{00292              \textcolor{stringliteral}{"A2"}: A2\}}
+\DoxyCodeLine{00293     \textcolor{keywordflow}{return} A2, cache}
+\DoxyCodeLine{00294 }
+\DoxyCodeLine{00295 }
+\DoxyCodeLine{00296 }
+\DoxyCodeLine{00299 }
+\DoxyCodeLine{00300 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00307}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac22409ca5bf4e2a84069b8832259aa2a}{00307}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ac22409ca5bf4e2a84069b8832259aa2a}{deep\_initialization}}(layer\_dims):}
+\DoxyCodeLine{00308     np.random.seed(3)}
+\DoxyCodeLine{00309     parameters = \{\}}
+\DoxyCodeLine{00310     L = len(layer\_dims)}
+\DoxyCodeLine{00311     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} range(1, L):}
+\DoxyCodeLine{00312         parameters[\textcolor{stringliteral}{'W'} + str(l)] = \(\backslash\)}
+\DoxyCodeLine{00313             np.random.randn(layer\_dims[l], layer\_dims[l-\/1])*0.01}
+\DoxyCodeLine{00314         parameters[\textcolor{stringliteral}{'b'} + str(l)] = \(\backslash\)}
+\DoxyCodeLine{00315             np.zeros((layer\_dims[l], 1))*0.01}
+\DoxyCodeLine{00316     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00317 }
+\DoxyCodeLine{00318 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00324}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_abd0b296a51a42b8841de2e0ec584e21c}{00324}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_abd0b296a51a42b8841de2e0ec584e21c}{deep\_linear}}(W, A, b):}
+\DoxyCodeLine{00325     z = np.dot(W, A) + b}
+\DoxyCodeLine{00326     \textcolor{keywordflow}{return} z}
+\DoxyCodeLine{00327 }
+\DoxyCodeLine{00328 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00332}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae772d750fa98fd997ee0f20e2e255f72}{00332}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae772d750fa98fd997ee0f20e2e255f72}{deep\_activation}}(z):}
+\DoxyCodeLine{00333     \textcolor{keywordflow}{return} np.tanh(z)}
+\DoxyCodeLine{00334 }
+\DoxyCodeLine{00335 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00343}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a9053ccc44ee85c2b505ca8235b264ba4}{00343}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a9053ccc44ee85c2b505ca8235b264ba4}{deep\_linear\_activation\_forward}}(A\_prev, W, b, activation):}
+\DoxyCodeLine{00344     \textcolor{keywordflow}{if} activation == \textcolor{stringliteral}{"sigmoid"}:}
+\DoxyCodeLine{00345         Z, linear\_cache = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_afbac86750318632038fd04f8ad723177}{linear\_forward}}(A\_prev, W, b)}
+\DoxyCodeLine{00346         \textcolor{comment}{\# TODO implement cached sigmoid}}
+\DoxyCodeLine{00347         A, activation\_cache = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a21734b28fb87a0c8494e865442d9b4ec}{deep\_sigmoid}}(Z)}
+\DoxyCodeLine{00348     }
+\DoxyCodeLine{00349     \textcolor{keywordflow}{elif} activation == \textcolor{stringliteral}{"relu"}:}
+\DoxyCodeLine{00350         Z, linear\_cache = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_afbac86750318632038fd04f8ad723177}{linear\_forward}}(A\_prev, W, b)\textcolor{comment}{\#}}
+\DoxyCodeLine{00351         \textcolor{comment}{\#TODO implemnet cached relu}}
+\DoxyCodeLine{00352         A, activation\_cache = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a314bb57a2c296337ea2f273c46f4e7e7}{relu}}(Z)}
+\DoxyCodeLine{00353     }
+\DoxyCodeLine{00354     \textcolor{keyword}{assert} (A.shape == (W.shape[0], A\_prev.shape[1]))}
+\DoxyCodeLine{00355     cache = (linear\_cache, activation\_cache)}
+\DoxyCodeLine{00356     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00357 }
+\DoxyCodeLine{00358 }
+\DoxyCodeLine{\Hypertarget{utils_8py_source_l00366}\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a57e2d187ebc733e018a0dcf6a506af9a}{00366}} \textcolor{keyword}{def }\mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_a57e2d187ebc733e018a0dcf6a506af9a}{deep\_linear\_activation\_backward}}(dA, cache, activation):}
+\DoxyCodeLine{00367     }
+\DoxyCodeLine{00374     \textcolor{keyword}{def }deep\_linear\_backward(dZ, cache):}
+\DoxyCodeLine{00375         A\_prev, W, b = cache}
+\DoxyCodeLine{00376         m = A\_prev.shape[1]}
+\DoxyCodeLine{00377 }
+\DoxyCodeLine{00378         dW = 1.0/m *np.dot(dZ, A\_prev.T)}
+\DoxyCodeLine{00379         db = 1.0/m * np.sum(dZ, axis=1, keepdims=\textcolor{keyword}{True})}
+\DoxyCodeLine{00380         dA\_prev = np.dot(W.T, dZ)}
+\DoxyCodeLine{00381     }
+\DoxyCodeLine{00382         \textcolor{keyword}{assert} (dA\_prev.shape == A\_prev.shape)}
+\DoxyCodeLine{00383         \textcolor{keyword}{assert} (dW.shape == W.shape)}
+\DoxyCodeLine{00384         \textcolor{keyword}{assert} (db.shape == b.shape)}
+\DoxyCodeLine{00385         }
+\DoxyCodeLine{00386         \textcolor{keywordflow}{return} dA\_prev, dW, db}
+\DoxyCodeLine{00387 }
+\DoxyCodeLine{00388     linear\_cache, activation\_cache = cache}
+\DoxyCodeLine{00389     \textcolor{keywordflow}{if} activation == \textcolor{stringliteral}{"relu"}:}
+\DoxyCodeLine{00390         dZ = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_ae93689ee55421e957e55192016219da0}{relu\_backward}}(dA, activation\_cache)}
+\DoxyCodeLine{00391         dA\_prev, dW, db = deep\_linear\_backward(dZ, linear\_cache)}
+\DoxyCodeLine{00392     \textcolor{keywordflow}{elif} activation == \textcolor{stringliteral}{"sigmoid"}:}
+\DoxyCodeLine{00393         dZ = \mbox{\hyperlink{namespaceaipy_1_1aipy_1_1utils_aec2b9988afa351577eb52f731029fc89}{sigmoid\_backward}}(dA, activation\_cache)}
+\DoxyCodeLine{00394         dA\_prev, dW, db = deep\_linear\_backward(dZ, linear\_cache)}
+\DoxyCodeLine{00395     \textcolor{keywordflow}{return} dA\_prev, dW, db}
+
+\end{DoxyCode}

@@ -1,0 +1,23 @@
+\hypertarget{aic1w4__test_8py_source}{}\doxysection{aic1w4\+\_\+test.\+py}
+\label{aic1w4__test_8py_source}\index{aipy/aic1w4\_test.py@{aipy/aic1w4\_test.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} h5py}
+\DoxyCodeLine{00003 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00004 \textcolor{keyword}{from} testCases\_v4a \textcolor{keyword}{import} *}
+\DoxyCodeLine{00005 \textcolor{keyword}{from} utils \textcolor{keyword}{import} *}
+\DoxyCodeLine{00006 }
+\DoxyCodeLine{00007  \textcolor{comment}{\# set default size of plots}}
+\DoxyCodeLine{00008 plt.rcParams[\textcolor{stringliteral}{'figure.figsize'}] = (5.0, 4.0)}
+\DoxyCodeLine{00009 plt.rcParams[\textcolor{stringliteral}{'image.interpolation'}] = \textcolor{stringliteral}{'nearest'}}
+\DoxyCodeLine{00010 plt.rcParams[\textcolor{stringliteral}{'image.cmap'}] = \textcolor{stringliteral}{'gray'}}
+\DoxyCodeLine{00011 }
+\DoxyCodeLine{00012 }
+\DoxyCodeLine{00013 Y, AL = compute\_cost\_test\_case()}
+\DoxyCodeLine{00014 print(\textcolor{stringliteral}{"cost = "} + str(compute\_cost(AL, Y)))}
+\DoxyCodeLine{00015 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00016 \textcolor{stringliteral}{cost    0.2797765635793422}}
+\DoxyCodeLine{00017 \textcolor{stringliteral}{'''}}
+
+\end{DoxyCode}

@@ -1,0 +1,418 @@
+\hypertarget{aic1w3_8py_source}{}\doxysection{aic1w3.\+py}
+\label{aic1w3_8py_source}\index{aipy/aic1w3.py@{aipy/aic1w3.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} matplotlib.pyplot \textcolor{keyword}{as} plt}
+\DoxyCodeLine{00003 \textcolor{keyword}{from} testCases\_v2 \textcolor{keyword}{import} *}
+\DoxyCodeLine{00004 \textcolor{keyword}{import} sklearn}
+\DoxyCodeLine{00005 \textcolor{keyword}{import} sklearn.datasets}
+\DoxyCodeLine{00006 \textcolor{keyword}{import} sklearn.linear\_model}
+\DoxyCodeLine{00007 \textcolor{keyword}{from} planar\_utils \textcolor{keyword}{import} plot\_decision\_boundary, sigmoid, load\_planar\_dataset, load\_extra\_datasets}
+\DoxyCodeLine{00008 }
+\DoxyCodeLine{00009 }
+\DoxyCodeLine{00010 np.random.seed(1) \textcolor{comment}{\# set a seed so that the results are consistent}}
+\DoxyCodeLine{00011 X, Y = load\_planar\_dataset()}
+\DoxyCodeLine{00012 }
+\DoxyCodeLine{00013 \textcolor{comment}{\# Visualize the data:}}
+\DoxyCodeLine{00014 plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);}
+\DoxyCodeLine{00015 \textcolor{comment}{\#}}
+\DoxyCodeLine{00016 shape\_X = X.shape}
+\DoxyCodeLine{00017 shape\_Y = Y.shape}
+\DoxyCodeLine{00018 m = shape\_X[1]}
+\DoxyCodeLine{00019 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'The shape of X is: '} + str(shape\_X))}
+\DoxyCodeLine{00020 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'The shape of Y is: '} + str(shape\_Y))}
+\DoxyCodeLine{00021 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'I have m = \%d training examples!'} \% (m))}
+\DoxyCodeLine{00022 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00023 \textcolor{stringliteral}{shape of X  (2, 400)}}
+\DoxyCodeLine{00024 \textcolor{stringliteral}{shape of Y  (1, 400)}}
+\DoxyCodeLine{00025 \textcolor{stringliteral}{m   400 }}
+\DoxyCodeLine{00026 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00027 }
+\DoxyCodeLine{00028 \textcolor{comment}{\# Train the logistic regression classifier}}
+\DoxyCodeLine{00029 clf = sklearn.linear\_model.LogisticRegressionCV();}
+\DoxyCodeLine{00030 clf.fit(X.T, Y.T);}
+\DoxyCodeLine{00031 \textcolor{comment}{\# Plot the decision boundary for logistic regression}}
+\DoxyCodeLine{00032 plot\_decision\_boundary(\textcolor{keyword}{lambda} x: clf.predict(x), X, Y)}
+\DoxyCodeLine{00033 plt.title(\textcolor{stringliteral}{"Logistic Regression"})}
+\DoxyCodeLine{00034 \textcolor{comment}{\# Print accuracy}}
+\DoxyCodeLine{00035 LR\_predictions = clf.predict(X.T)}
+\DoxyCodeLine{00036 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'Accuracy of logistic regression: \%d '} \% float((np.dot(Y,LR\_predictions) + np.dot(1-\/Y,1-\/LR\_predictions))/float(Y.size)*100) +}
+\DoxyCodeLine{00037        \textcolor{stringliteral}{'\% '} + \textcolor{stringliteral}{"(percentage of correctly labelled datapoints)"})}
+\DoxyCodeLine{00038 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00039 \textcolor{stringliteral}{Accuracy    47\% }}
+\DoxyCodeLine{00040 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00041 }
+\DoxyCodeLine{00042 \textcolor{comment}{\# GRADED FUNCTION: layer\_sizes}}
+\DoxyCodeLine{00043 }
+\DoxyCodeLine{00044 \textcolor{keyword}{def }layer\_sizes(X, Y):}
+\DoxyCodeLine{00045     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00046 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00047 \textcolor{stringliteral}{    X -\/-\/ input dataset of shape (input size, number of examples)}}
+\DoxyCodeLine{00048 \textcolor{stringliteral}{    Y -\/-\/ labels of shape (output size, number of examples)}}
+\DoxyCodeLine{00049 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00050 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00051 \textcolor{stringliteral}{    n\_x -\/-\/ the size of the input layer}}
+\DoxyCodeLine{00052 \textcolor{stringliteral}{    n\_h -\/-\/ the size of the hidden layer}}
+\DoxyCodeLine{00053 \textcolor{stringliteral}{    n\_y -\/-\/ the size of the output layer}}
+\DoxyCodeLine{00054 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00055     n\_x = X.shape[0] \textcolor{comment}{\# size of input layer}}
+\DoxyCodeLine{00056     n\_h = 4 \textcolor{comment}{\# hidden layer is hard coded to have length 4}}
+\DoxyCodeLine{00057     n\_y = Y.shape[0] \textcolor{comment}{\# size of output layer}}
+\DoxyCodeLine{00058     }
+\DoxyCodeLine{00059     \textcolor{keywordflow}{return} (n\_x, n\_h, n\_y)}
+\DoxyCodeLine{00060 }
+\DoxyCodeLine{00061 X\_assess, Y\_assess = layer\_sizes\_test\_case()}
+\DoxyCodeLine{00062 (n\_x, n\_h, n\_y) = layer\_sizes(X\_assess, Y\_assess)}
+\DoxyCodeLine{00063 print(\textcolor{stringliteral}{"The size of the input layer is: n\_x = "} + str(n\_x))}
+\DoxyCodeLine{00064 print(\textcolor{stringliteral}{"The size of the hidden layer is: n\_h = "} + str(n\_h))}
+\DoxyCodeLine{00065 print(\textcolor{stringliteral}{"The size of the output layer is: n\_y = "} + str(n\_y))}
+\DoxyCodeLine{00066 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00067 \textcolor{stringliteral}{n\_x     5}}
+\DoxyCodeLine{00068 \textcolor{stringliteral}{n\_h     4}}
+\DoxyCodeLine{00069 \textcolor{stringliteral}{n\_y     2}}
+\DoxyCodeLine{00070 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00071 n\_x, n\_h, n\_y = initialize\_parameters\_test\_case()}
+\DoxyCodeLine{00072 }
+\DoxyCodeLine{00073 parameters = initialize\_parameters(n\_x, n\_h, n\_y)}
+\DoxyCodeLine{00074 print(\textcolor{stringliteral}{"W1 = "} + str(parameters[\textcolor{stringliteral}{"W1"}]))}
+\DoxyCodeLine{00075 print(\textcolor{stringliteral}{"b1 = "} + str(parameters[\textcolor{stringliteral}{"b1"}]))}
+\DoxyCodeLine{00076 print(\textcolor{stringliteral}{"W2 = "} + str(parameters[\textcolor{stringliteral}{"W2"}]))}
+\DoxyCodeLine{00077 print(\textcolor{stringliteral}{"b2 = "} + str(parameters[\textcolor{stringliteral}{"b2"}]))}
+\DoxyCodeLine{00078 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00079 \textcolor{stringliteral}{W1  [[-\/0.00416758 -\/0.00056267] [-\/0.02136196 0.01640271] [-\/0.01793436 -\/0.00841747] [ 0.00502881 -\/0.01245288]]}}
+\DoxyCodeLine{00080 \textcolor{stringliteral}{b1  [[ 0.] [ 0.] [ 0.] [ 0.]]}}
+\DoxyCodeLine{00081 \textcolor{stringliteral}{W2  [[-\/0.01057952 -\/0.00909008 0.00551454 0.02292208]]}}
+\DoxyCodeLine{00082 \textcolor{stringliteral}{b2  [[ 0.]]}}
+\DoxyCodeLine{00083 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00084 }
+\DoxyCodeLine{00085 }
+\DoxyCodeLine{00086 X\_assess, parameters = forward\_propagation\_test\_case()}
+\DoxyCodeLine{00087 A2, cache = forward\_propagation(X\_assess, parameters)}
+\DoxyCodeLine{00088 }
+\DoxyCodeLine{00089 \textcolor{comment}{\# Note: we use the mean here just to make sure that your output matches ours. }}
+\DoxyCodeLine{00090 print(np.mean(cache[\textcolor{stringliteral}{'Z1'}]) ,np.mean(cache[\textcolor{stringliteral}{'A1'}]),np.mean(cache[\textcolor{stringliteral}{'Z2'}]),np.mean(cache[\textcolor{stringliteral}{'A2'}]))}
+\DoxyCodeLine{00091 }
+\DoxyCodeLine{00092 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00093 \textcolor{stringliteral}{0.262818640198 0.091999045227 -\/1.30766601287 0.212877681719}}
+\DoxyCodeLine{00094 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00095 }
+\DoxyCodeLine{00096 \textcolor{comment}{\# GRADED FUNCTION: compute\_cost}}
+\DoxyCodeLine{00097 }
+\DoxyCodeLine{00098 \textcolor{keyword}{def }compute\_cost(A2, Y, parameters):}
+\DoxyCodeLine{00099     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00100 \textcolor{stringliteral}{    Computes the cross-\/entropy cost given in equation (13)}}
+\DoxyCodeLine{00101 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00102 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00103 \textcolor{stringliteral}{    A2 -\/-\/ The sigmoid output of the second activation, of shape (1, number of examples)}}
+\DoxyCodeLine{00104 \textcolor{stringliteral}{    Y -\/-\/ "true" labels vector of shape (1, number of examples)}}
+\DoxyCodeLine{00105 \textcolor{stringliteral}{    parameters -\/-\/ python dictionary containing your parameters W1, b1, W2 and b2}}
+\DoxyCodeLine{00106 \textcolor{stringliteral}{    [Note that the parameters argument is not used in this function, }}
+\DoxyCodeLine{00107 \textcolor{stringliteral}{    but the auto-\/grader currently expects this parameter.}}
+\DoxyCodeLine{00108 \textcolor{stringliteral}{    Future version of this notebook will fix both the notebook }}
+\DoxyCodeLine{00109 \textcolor{stringliteral}{    and the auto-\/grader so that `parameters` is not needed.}}
+\DoxyCodeLine{00110 \textcolor{stringliteral}{    For now, please include `parameters` in the function signature,}}
+\DoxyCodeLine{00111 \textcolor{stringliteral}{    and also when invoking this function.]}}
+\DoxyCodeLine{00112 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00113 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00114 \textcolor{stringliteral}{    cost -\/-\/ cross-\/entropy cost given equation (13)}}
+\DoxyCodeLine{00115 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00116 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00117     }
+\DoxyCodeLine{00118     m = Y.shape[1] \textcolor{comment}{\# number of example}}
+\DoxyCodeLine{00119 }
+\DoxyCodeLine{00120     \textcolor{comment}{\# Compute the cross-\/entropy cost}}
+\DoxyCodeLine{00121     }
+\DoxyCodeLine{00122     logprobs = np.multiply(Y, np.log(A2)) + np.multiply((1-\/Y), np.log(1-\/A2))}
+\DoxyCodeLine{00123     cost = -\/1.0/m * np.sum(logprobs)}
+\DoxyCodeLine{00124     }
+\DoxyCodeLine{00125     }
+\DoxyCodeLine{00126     cost = float(np.squeeze(cost))  \textcolor{comment}{\# makes sure cost is the dimension we expect. }}
+\DoxyCodeLine{00127                                     \textcolor{comment}{\# E.g., turns [[17]] into 17 }}
+\DoxyCodeLine{00128     assert(isinstance(cost, float))}
+\DoxyCodeLine{00129     }
+\DoxyCodeLine{00130     \textcolor{keywordflow}{return} cost}
+\DoxyCodeLine{00131 }
+\DoxyCodeLine{00132 A2, Y\_assess, parameters = compute\_cost\_test\_case()}
+\DoxyCodeLine{00133 }
+\DoxyCodeLine{00134 print(\textcolor{stringliteral}{"cost = "} + str(compute\_cost(A2, Y\_assess, parameters)))}
+\DoxyCodeLine{00135 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00136 \textcolor{stringliteral}{cost    0.693058761...}}
+\DoxyCodeLine{00137 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00138 }
+\DoxyCodeLine{00139 \textcolor{comment}{\# GRADED FUNCTION: backward\_propagation}}
+\DoxyCodeLine{00140 }
+\DoxyCodeLine{00141 \textcolor{keyword}{def }backward\_propagation(parameters, cache, X, Y):}
+\DoxyCodeLine{00142     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00143 \textcolor{stringliteral}{    Implement the backward propagation using the instructions above.}}
+\DoxyCodeLine{00144 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00145 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00146 \textcolor{stringliteral}{    parameters -\/-\/ python dictionary containing our parameters }}
+\DoxyCodeLine{00147 \textcolor{stringliteral}{    cache -\/-\/ a dictionary containing "Z1", "A1", "Z2" and "A2".}}
+\DoxyCodeLine{00148 \textcolor{stringliteral}{    X -\/-\/ input data of shape (2, number of examples)}}
+\DoxyCodeLine{00149 \textcolor{stringliteral}{    Y -\/-\/ "true" labels vector of shape (1, number of examples)}}
+\DoxyCodeLine{00150 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00151 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00152 \textcolor{stringliteral}{    grads -\/-\/ python dictionary containing your gradients with respect to different parameters}}
+\DoxyCodeLine{00153 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00154     m = X.shape[1]}
+\DoxyCodeLine{00155     }
+\DoxyCodeLine{00156     \textcolor{comment}{\# First, retrieve W1 and W2 from the dictionary "parameters".}}
+\DoxyCodeLine{00157     }
+\DoxyCodeLine{00158     W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00159     W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00160     }
+\DoxyCodeLine{00161         }
+\DoxyCodeLine{00162     \textcolor{comment}{\# Retrieve also A1 and A2 from dictionary "cache".}}
+\DoxyCodeLine{00163     }
+\DoxyCodeLine{00164     A1 = cache[\textcolor{stringliteral}{'A1'}]}
+\DoxyCodeLine{00165     A2 = cache[\textcolor{stringliteral}{'A2'}]}
+\DoxyCodeLine{00166     }
+\DoxyCodeLine{00167     }
+\DoxyCodeLine{00168     \textcolor{comment}{\# Backward propagation: calculate dW1, db1, dW2, db2. }}
+\DoxyCodeLine{00169     }
+\DoxyCodeLine{00170     dZ2 = A2-\/Y \textcolor{comment}{\#}}
+\DoxyCodeLine{00171     dW2 = 1.0/m *np.dot(dZ2,A1.T)}
+\DoxyCodeLine{00172     db2 = 1.0/m * np.sum(dZ2, axis=1, keepdims=\textcolor{keyword}{True}) \textcolor{comment}{\#}}
+\DoxyCodeLine{00173     }
+\DoxyCodeLine{00174     dZ1 = np.multiply(np.dot(W2.T, dZ2),  (1-\/np.power(A1, 2)))}
+\DoxyCodeLine{00175     dW1 = 1.0/m * np.dot(dZ1,X.T)}
+\DoxyCodeLine{00176     db1 = 1.0/m * np.sum(dZ1, axis=1, keepdims=\textcolor{keyword}{True}) \textcolor{comment}{\#}}
+\DoxyCodeLine{00177     }
+\DoxyCodeLine{00178     }
+\DoxyCodeLine{00179     grads = \{\textcolor{stringliteral}{"dW1"}: dW1,}
+\DoxyCodeLine{00180              \textcolor{stringliteral}{"db1"}: db1,}
+\DoxyCodeLine{00181              \textcolor{stringliteral}{"dW2"}: dW2,}
+\DoxyCodeLine{00182              \textcolor{stringliteral}{"db2"}: db2\}}
+\DoxyCodeLine{00183     }
+\DoxyCodeLine{00184     \textcolor{keywordflow}{return} grads}
+\DoxyCodeLine{00185 }
+\DoxyCodeLine{00186 parameters, cache, X\_assess, Y\_assess = backward\_propagation\_test\_case()}
+\DoxyCodeLine{00187 }
+\DoxyCodeLine{00188 grads = backward\_propagation(parameters, cache, X\_assess, Y\_assess)}
+\DoxyCodeLine{00189 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"dW1 = "}+ str(grads[\textcolor{stringliteral}{"dW1"}]))}
+\DoxyCodeLine{00190 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"db1 = "}+ str(grads[\textcolor{stringliteral}{"db1"}]))}
+\DoxyCodeLine{00191 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"dW2 = "}+ str(grads[\textcolor{stringliteral}{"dW2"}]))}
+\DoxyCodeLine{00192 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"db2 = "}+ str(grads[\textcolor{stringliteral}{"db2"}]))}
+\DoxyCodeLine{00193 }
+\DoxyCodeLine{00194 }
+\DoxyCodeLine{00195 }
+\DoxyCodeLine{00196 dW1     [[ 0.00301023 -\/0.00747267] [ 0.00257968 -\/0.00641288] [-\/0.00156892 0.003893 ] [-\/0.00652037 0.01618243]]}
+\DoxyCodeLine{00197 db1     [[ 0.00176201] [ 0.00150995] [-\/0.00091736] [-\/0.00381422]]}
+\DoxyCodeLine{00198 dW2     [[ 0.00078841 0.01765429 -\/0.00084166 -\/0.01022527]]}
+\DoxyCodeLine{00199 db2     [[-\/0.16655712]]}
+\DoxyCodeLine{00200 }
+\DoxyCodeLine{00201 }
+\DoxyCodeLine{00202 \textcolor{comment}{\# GRADED FUNCTION: update\_parameters}}
+\DoxyCodeLine{00203 }
+\DoxyCodeLine{00204 \textcolor{keyword}{def }update\_parameters(parameters, grads, learning\_rate = 1.2):}
+\DoxyCodeLine{00205     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00206 \textcolor{stringliteral}{    Updates parameters using the gradient descent update rule given above}}
+\DoxyCodeLine{00207 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00208 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00209 \textcolor{stringliteral}{    parameters -\/-\/ python dictionary containing your parameters }}
+\DoxyCodeLine{00210 \textcolor{stringliteral}{    grads -\/-\/ python dictionary containing your gradients }}
+\DoxyCodeLine{00211 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00212 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00213 \textcolor{stringliteral}{    parameters -\/-\/ python dictionary containing your updated parameters }}
+\DoxyCodeLine{00214 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00215     \textcolor{comment}{\# Retrieve each parameter from the dictionary "parameters"}}
+\DoxyCodeLine{00216     }
+\DoxyCodeLine{00217     W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00218     b1 = parameters[\textcolor{stringliteral}{'b1'}]}
+\DoxyCodeLine{00219     W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00220     b2 = parameters[\textcolor{stringliteral}{'b2'}]}
+\DoxyCodeLine{00221     }
+\DoxyCodeLine{00222     }
+\DoxyCodeLine{00223     \textcolor{comment}{\# Retrieve each gradient from the dictionary "grads"}}
+\DoxyCodeLine{00224     }
+\DoxyCodeLine{00225     dW1 = grads[\textcolor{stringliteral}{'dW1'}]}
+\DoxyCodeLine{00226     db1 = grads[\textcolor{stringliteral}{'db1'}]}
+\DoxyCodeLine{00227     dW2 = grads[\textcolor{stringliteral}{'dW2'}]}
+\DoxyCodeLine{00228     db2 = grads[\textcolor{stringliteral}{'db2'}]}
+\DoxyCodeLine{00229     }
+\DoxyCodeLine{00230     }
+\DoxyCodeLine{00231     \textcolor{comment}{\# Update rule for each parameter}}
+\DoxyCodeLine{00232     }
+\DoxyCodeLine{00233     W1 = W1 -\/ learning\_rate * dW1}
+\DoxyCodeLine{00234     b1 = b1 -\/ learning\_rate * db1}
+\DoxyCodeLine{00235     W2 = W2 -\/ learning\_rate * dW2}
+\DoxyCodeLine{00236     b2 = b2 -\/ learning\_rate * db2}
+\DoxyCodeLine{00237     }
+\DoxyCodeLine{00238     }
+\DoxyCodeLine{00239     parameters = \{\textcolor{stringliteral}{"W1"}: W1,}
+\DoxyCodeLine{00240                   \textcolor{stringliteral}{"b1"}: b1,}
+\DoxyCodeLine{00241                   \textcolor{stringliteral}{"W2"}: W2,}
+\DoxyCodeLine{00242                   \textcolor{stringliteral}{"b2"}: b2\}}
+\DoxyCodeLine{00243     }
+\DoxyCodeLine{00244     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00245 }
+\DoxyCodeLine{00246 parameters, grads = update\_parameters\_test\_case()}
+\DoxyCodeLine{00247 parameters = update\_parameters(parameters, grads)}
+\DoxyCodeLine{00248 }
+\DoxyCodeLine{00249 print(\textcolor{stringliteral}{"W1 = "} + str(parameters[\textcolor{stringliteral}{"W1"}]))}
+\DoxyCodeLine{00250 print(\textcolor{stringliteral}{"b1 = "} + str(parameters[\textcolor{stringliteral}{"b1"}]))}
+\DoxyCodeLine{00251 print(\textcolor{stringliteral}{"W2 = "} + str(parameters[\textcolor{stringliteral}{"W2"}]))}
+\DoxyCodeLine{00252 print(\textcolor{stringliteral}{"b2 = "} + str(parameters[\textcolor{stringliteral}{"b2"}]))}
+\DoxyCodeLine{00253 }
+\DoxyCodeLine{00254 }
+\DoxyCodeLine{00255 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00256 \textcolor{stringliteral}{W1  [[-\/0.00643025 0.01936718] [-\/0.02410458 0.03978052] [-\/0.01653973 -\/0.02096177] [ 0.01046864 -\/0.05990141]]}}
+\DoxyCodeLine{00257 \textcolor{stringliteral}{b1  [[ -\/1.02420756e-\/06] [ 1.27373948e-\/05] [ 8.32996807e-\/07] [ -\/3.20136836e-\/06]]}}
+\DoxyCodeLine{00258 \textcolor{stringliteral}{W2  [[-\/0.01041081 -\/0.04463285 0.01758031 0.04747113]]}}
+\DoxyCodeLine{00259 \textcolor{stringliteral}{b2  [[ 0.00010457]] }}
+\DoxyCodeLine{00260 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00261 }
+\DoxyCodeLine{00262 \textcolor{comment}{\# GRADED FUNCTION: nn\_model}}
+\DoxyCodeLine{00263 }
+\DoxyCodeLine{00264 \textcolor{keyword}{def }nn\_model(X, Y, n\_h, num\_iterations = 10000, print\_cost=False):}
+\DoxyCodeLine{00265     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00266 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00267 \textcolor{stringliteral}{    X -\/-\/ dataset of shape (2, number of examples)}}
+\DoxyCodeLine{00268 \textcolor{stringliteral}{    Y -\/-\/ labels of shape (1, number of examples)}}
+\DoxyCodeLine{00269 \textcolor{stringliteral}{    n\_h -\/-\/ size of the hidden layer}}
+\DoxyCodeLine{00270 \textcolor{stringliteral}{    num\_iterations -\/-\/ Number of iterations in gradient descent loop}}
+\DoxyCodeLine{00271 \textcolor{stringliteral}{    print\_cost -\/-\/ if True, print the cost every 1000 iterations}}
+\DoxyCodeLine{00272 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00273 \textcolor{stringliteral}{    Returns:}}
+\DoxyCodeLine{00274 \textcolor{stringliteral}{    parameters -\/-\/ parameters learnt by the model. They can then be used to predict.}}
+\DoxyCodeLine{00275 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00276     }
+\DoxyCodeLine{00277     np.random.seed(3)}
+\DoxyCodeLine{00278     n\_x = layer\_sizes(X, Y)[0]}
+\DoxyCodeLine{00279     n\_y = layer\_sizes(X, Y)[2]}
+\DoxyCodeLine{00280     }
+\DoxyCodeLine{00281     \textcolor{comment}{\# Initialize parameters}}
+\DoxyCodeLine{00282     }
+\DoxyCodeLine{00283     parameters = initialize\_parameters(n\_x, n\_h, n\_y)}
+\DoxyCodeLine{00284     }
+\DoxyCodeLine{00285     }
+\DoxyCodeLine{00286     \textcolor{comment}{\# Loop (gradient descent)}}
+\DoxyCodeLine{00287 }
+\DoxyCodeLine{00288     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(0, num\_iterations):}
+\DoxyCodeLine{00289          }
+\DoxyCodeLine{00290         }
+\DoxyCodeLine{00292         A2, cache = forward\_propagation(X, parameters)}
+\DoxyCodeLine{00293         }
+\DoxyCodeLine{00294         \textcolor{comment}{\# Cost function. Inputs: "A2, Y, parameters". Outputs: "cost".}}
+\DoxyCodeLine{00295         cost = compute\_cost(A2, Y, parameters)}
+\DoxyCodeLine{00296  }
+\DoxyCodeLine{00297         \textcolor{comment}{\# Backpropagation. Inputs: "parameters, cache, X, Y". Outputs: "grads".}}
+\DoxyCodeLine{00298         grads =  backward\_propagation(parameters, cache, X, Y)}
+\DoxyCodeLine{00299  }
+\DoxyCodeLine{00300         \textcolor{comment}{\# Gradient descent parameter update. Inputs: "parameters, grads". Outputs: "parameters".}}
+\DoxyCodeLine{00301         parameters = update\_parameters(parameters, grads)}
+\DoxyCodeLine{00302         }
+\DoxyCodeLine{00303         }
+\DoxyCodeLine{00304         }
+\DoxyCodeLine{00305         \textcolor{comment}{\# Print the cost every 1000 iterations}}
+\DoxyCodeLine{00306         \textcolor{keywordflow}{if} print\_cost \textcolor{keywordflow}{and} i \% 1000 == 0:}
+\DoxyCodeLine{00307             \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Cost after iteration \%i: \%f"} \%(i, cost))}
+\DoxyCodeLine{00308 }
+\DoxyCodeLine{00309     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00310 }
+\DoxyCodeLine{00311 X\_assess, Y\_assess = nn\_model\_test\_case()}
+\DoxyCodeLine{00312 parameters = nn\_model(X\_assess, Y\_assess, 4, num\_iterations=10000, print\_cost=\textcolor{keyword}{True})}
+\DoxyCodeLine{00313 print(\textcolor{stringliteral}{"W1 = "} + str(parameters[\textcolor{stringliteral}{"W1"}]))}
+\DoxyCodeLine{00314 print(\textcolor{stringliteral}{"b1 = "} + str(parameters[\textcolor{stringliteral}{"b1"}]))}
+\DoxyCodeLine{00315 print(\textcolor{stringliteral}{"W2 = "} + str(parameters[\textcolor{stringliteral}{"W2"}]))}
+\DoxyCodeLine{00316 print(\textcolor{stringliteral}{"b2 = "} + str(parameters[\textcolor{stringliteral}{"b2"}]))}
+\DoxyCodeLine{00317 }
+\DoxyCodeLine{00318 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00319 \textcolor{stringliteral}{cost after iteration 0  0.692739}}
+\DoxyCodeLine{00320 \textcolor{stringliteral}{⋮⋮}}
+\DoxyCodeLine{00321 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00322 \textcolor{stringliteral}{⋮⋮}}
+\DoxyCodeLine{00323 \textcolor{stringliteral}{W1  [[-\/0.65848169 1.21866811] [-\/0.76204273 1.39377573] [ 0.5792005 -\/1.10397703] [ 0.76773391 -\/1.41477129]]}}
+\DoxyCodeLine{00324 \textcolor{stringliteral}{b1  [[ 0.287592 ] [ 0.3511264 ] [-\/0.2431246 ] [-\/0.35772805]]}}
+\DoxyCodeLine{00325 \textcolor{stringliteral}{W2  [[-\/2.45566237 -\/3.27042274 2.00784958 3.36773273]]}}
+\DoxyCodeLine{00326 \textcolor{stringliteral}{b2  [[ 0.20459656]]}}
+\DoxyCodeLine{00327 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00328 }
+\DoxyCodeLine{00329 }
+\DoxyCodeLine{00330 \textcolor{comment}{\# GRADED FUNCTION: predict}}
+\DoxyCodeLine{00331 }
+\DoxyCodeLine{00332 \textcolor{keyword}{def }predict(parameters, X):}
+\DoxyCodeLine{00333     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00334 \textcolor{stringliteral}{    Using the learned parameters, predicts a class for each example in X}}
+\DoxyCodeLine{00335 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00336 \textcolor{stringliteral}{    Arguments:}}
+\DoxyCodeLine{00337 \textcolor{stringliteral}{    parameters -\/-\/ python dictionary containing your parameters }}
+\DoxyCodeLine{00338 \textcolor{stringliteral}{    X -\/-\/ input data of size (n\_x, m)}}
+\DoxyCodeLine{00339 \textcolor{stringliteral}{    }}
+\DoxyCodeLine{00340 \textcolor{stringliteral}{    Returns}}
+\DoxyCodeLine{00341 \textcolor{stringliteral}{    predictions -\/-\/ vector of predictions of our model (red: 0 / blue: 1)}}
+\DoxyCodeLine{00342 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00343     }
+\DoxyCodeLine{00344     \textcolor{comment}{\# Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.}}
+\DoxyCodeLine{00345     }
+\DoxyCodeLine{00346     A2, cache = forward\_propagation(X, parameters)}
+\DoxyCodeLine{00347     predictions = [1 \textcolor{keywordflow}{if} e > 0.5 \textcolor{keywordflow}{else} 0 \textcolor{keywordflow}{for} e \textcolor{keywordflow}{in} np.squeeze(A2)]}
+\DoxyCodeLine{00348     }
+\DoxyCodeLine{00349     }
+\DoxyCodeLine{00350     \textcolor{keywordflow}{return} predictions}
+\DoxyCodeLine{00351 }
+\DoxyCodeLine{00352 parameters, X\_assess = predict\_test\_case()}
+\DoxyCodeLine{00353 }
+\DoxyCodeLine{00354 predictions = predict(parameters, X\_assess)}
+\DoxyCodeLine{00355 print(\textcolor{stringliteral}{"predictions mean = "} + str(np.mean(predictions)))}
+\DoxyCodeLine{00356 }
+\DoxyCodeLine{00357 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00358 \textcolor{stringliteral}{predictions mean    0.666666666667}}
+\DoxyCodeLine{00359 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00360 }
+\DoxyCodeLine{00361 \textcolor{comment}{\# Build a model with a n\_h-\/dimensional hidden layer}}
+\DoxyCodeLine{00362 parameters = nn\_model(X, Y, n\_h = 4, num\_iterations = 10000, print\_cost=\textcolor{keyword}{True})}
+\DoxyCodeLine{00363 }
+\DoxyCodeLine{00364 \textcolor{comment}{\# Plot the decision boundary}}
+\DoxyCodeLine{00365 plot\_decision\_boundary(\textcolor{keyword}{lambda} x: predict(parameters, x.T), X, Y)}
+\DoxyCodeLine{00366 plt.title(\textcolor{stringliteral}{"Decision Boundary for hidden layer size "} + str(4))}
+\DoxyCodeLine{00367 }
+\DoxyCodeLine{00368 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00369 \textcolor{stringliteral}{Cost after iteration 9000   0.218607 }}
+\DoxyCodeLine{00370 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00371 }
+\DoxyCodeLine{00372 \textcolor{comment}{\# Print accuracy}}
+\DoxyCodeLine{00373 predictions = predict(parameters, X)}
+\DoxyCodeLine{00374 \textcolor{keywordflow}{print} (\textcolor{stringliteral}{'Accuracy: \%d'} \% float((np.dot(Y,predictions.T) + np.dot(1-\/Y,1-\/predictions.T))/float(Y.size)*100) + \textcolor{stringliteral}{'\%'})}
+\DoxyCodeLine{00375 }
+\DoxyCodeLine{00376 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00377 \textcolor{stringliteral}{Accuracy    90\% }}
+\DoxyCodeLine{00378 \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00379 }
+\DoxyCodeLine{00380 \textcolor{comment}{\# This may take about 2 minutes to run}}
+\DoxyCodeLine{00381 }
+\DoxyCodeLine{00382 plt.figure(figsize=(16, 32))}
+\DoxyCodeLine{00383 hidden\_layer\_sizes = [1, 2, 3, 4, 5, 20, 50]}
+\DoxyCodeLine{00384 \textcolor{keywordflow}{for} i, n\_h \textcolor{keywordflow}{in} enumerate(hidden\_layer\_sizes):}
+\DoxyCodeLine{00385     plt.subplot(5, 2, i+1)}
+\DoxyCodeLine{00386     plt.title(\textcolor{stringliteral}{'Hidden Layer of size \%d'} \% n\_h)}
+\DoxyCodeLine{00387     parameters = nn\_model(X, Y, n\_h, num\_iterations = 5000)}
+\DoxyCodeLine{00388     plot\_decision\_boundary(\textcolor{keyword}{lambda} x: predict(parameters, x.T), X, Y)}
+\DoxyCodeLine{00389     predictions = predict(parameters, X)}
+\DoxyCodeLine{00390     accuracy = float((np.dot(Y,predictions.T) + np.dot(1-\/Y,1-\/predictions.T))/float(Y.size)*100)}
+\DoxyCodeLine{00391     \textcolor{keywordflow}{print} (\textcolor{stringliteral}{"Accuracy for \{\} hidden units: \{\} \%"}.format(n\_h, accuracy))}
+\DoxyCodeLine{00392 }
+\DoxyCodeLine{00393 \textcolor{comment}{\# Datasets}}
+\DoxyCodeLine{00394 noisy\_circles, noisy\_moons, blobs, gaussian\_quantiles, no\_structure = load\_extra\_datasets()}
+\DoxyCodeLine{00395 }
+\DoxyCodeLine{00396 datasets = \{\textcolor{stringliteral}{"noisy\_circles"}: noisy\_circles,}
+\DoxyCodeLine{00397             \textcolor{stringliteral}{"noisy\_moons"}: noisy\_moons,}
+\DoxyCodeLine{00398             \textcolor{stringliteral}{"blobs"}: blobs,}
+\DoxyCodeLine{00399             \textcolor{stringliteral}{"gaussian\_quantiles"}: gaussian\_quantiles\}}
+\DoxyCodeLine{00400 }
+\DoxyCodeLine{00401 }
+\DoxyCodeLine{00402 dataset = \textcolor{stringliteral}{"noisy\_moons"}}
+\DoxyCodeLine{00403 }
+\DoxyCodeLine{00404 }
+\DoxyCodeLine{00405 X, Y = datasets[dataset]}
+\DoxyCodeLine{00406 X, Y = X.T, Y.reshape(1, Y.shape[0])}
+\DoxyCodeLine{00407 }
+\DoxyCodeLine{00408 \textcolor{comment}{\# make blobs binary}}
+\DoxyCodeLine{00409 \textcolor{keywordflow}{if} dataset == \textcolor{stringliteral}{"blobs"}:}
+\DoxyCodeLine{00410     Y = Y\%2}
+\DoxyCodeLine{00411 }
+\DoxyCodeLine{00412 \textcolor{comment}{\# Visualize the data}}
+\DoxyCodeLine{00413 plt.scatter(X[0, :], X[1, :], c=Y, s=40, cmap=plt.cm.Spectral);}
+
+\end{DoxyCode}

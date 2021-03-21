@@ -1,0 +1,40 @@
+\hypertarget{core_8py_source}{}\doxysection{core.\+py}
+\label{core_8py_source}\index{aipy/core.py@{aipy/core.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 \textcolor{keyword}{from} utils \textcolor{keyword}{import} \textcolor{keyword}{as} utl}
+\DoxyCodeLine{00003 }
+\DoxyCodeLine{\Hypertarget{core_8py_source_l00004}\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression}{00004}} \textcolor{keyword}{class }\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression}{Logistic\_regression}}(object):}
+\DoxyCodeLine{00005     \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00006 \textcolor{stringliteral}{    a single layer network}}
+\DoxyCodeLine{00007 \textcolor{stringliteral}{    '''}}
+\DoxyCodeLine{\Hypertarget{core_8py_source_l00008}\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8ab37819bd1f6c82cafa708d4283f593}{00008}}     \textcolor{keyword}{def }\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8ab37819bd1f6c82cafa708d4283f593}{\_\_init\_\_}}(self, X, Y, learning\_rate=0.01):}
+\DoxyCodeLine{00009         \textcolor{comment}{\#TODO X(m,n+1) why n+1, and not n!!}}
+\DoxyCodeLine{00010         \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00011 \textcolor{stringliteral}{        X: matrix of features which is (m,n+1)}}
+\DoxyCodeLine{00012 \textcolor{stringliteral}{        Y: corresponding labels of the input matrix x, dimensions (m,1)}}
+\DoxyCodeLine{00013 \textcolor{stringliteral}{        W: weight vector of dimension (n+1,1)}}
+\DoxyCodeLine{00014 \textcolor{stringliteral}{        '''}}
+\DoxyCodeLine{00015         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ae02206641695ab7374588f780fd46934}{m}}=X.shape[0]}
+\DoxyCodeLine{00016         assert(X.shape[0]==y.shape[0])}
+\DoxyCodeLine{00017         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_aa868556a5d495b863f960f938672b6fe}{X}}=X.T}
+\DoxyCodeLine{00018         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a6cfe445c0d09f4022805c7cfea10d792}{Y}}=Y.T        }
+\DoxyCodeLine{00019         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_af773062c3ebeeb0a8ed4c4caa5c269b9}{b}}=\textcolor{keywordtype}{None}}
+\DoxyCodeLine{00020         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ac4ea7382df1c10cb68a34d887aecb49a}{w}}=\textcolor{keywordtype}{None}}
+\DoxyCodeLine{00021         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_af773062c3ebeeb0a8ed4c4caa5c269b9}{b}}, self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ac4ea7382df1c10cb68a34d887aecb49a}{w}} = initialize\_with\_zeros(X.shape[1])}
+\DoxyCodeLine{00022         self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a0bf0dedc5b55ba194b624d1e59b9ff47}{alpha}}=learning\_rate}
+\DoxyCodeLine{00023         }
+\DoxyCodeLine{00024     }
+\DoxyCodeLine{00025     \textcolor{keyword}{def }gradient\_descent(self, num\_iters=100):}
+\DoxyCodeLine{00026         params, grads, costs = utl.gradient\_descent \(\backslash\)}
+\DoxyCodeLine{00027             (self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ac4ea7382df1c10cb68a34d887aecb49a}{w}}, self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_af773062c3ebeeb0a8ed4c4caa5c269b9}{b}}, self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_aa868556a5d495b863f960f938672b6fe}{X}}, self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a6cfe445c0d09f4022805c7cfea10d792}{Y}}, num\_iters, self.\mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a0bf0dedc5b55ba194b624d1e59b9ff47}{alpha}})}
+\DoxyCodeLine{00028         \textcolor{keywordflow}{return} params, grads, costs}
+\DoxyCodeLine{00029 }
+\DoxyCodeLine{00030     \textcolor{keyword}{def }predict(x):}
+\DoxyCodeLine{00031         :}
+\DoxyCodeLine{00032     \textcolor{keyword}{def }predict(X):}
+\DoxyCodeLine{00033         :}
+\DoxyCodeLine{00034 }
+
+\end{DoxyCode}

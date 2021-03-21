@@ -1,0 +1,175 @@
+\hypertarget{neural__network_8py_source}{}\doxysection{neural\+\_\+network.\+py}
+\label{neural__network_8py_source}\index{aipy/neural\_network.py@{aipy/neural\_network.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 }
+\DoxyCodeLine{00003 }
+\DoxyCodeLine{00010 \textcolor{keyword}{def }deep\_initialization(layer\_dims):}
+\DoxyCodeLine{00011     np.random.seed(3)}
+\DoxyCodeLine{00012     parameters = \{\}}
+\DoxyCodeLine{00013     L = len(layer\_dims)}
+\DoxyCodeLine{00014     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} range(1, L):}
+\DoxyCodeLine{00015         parameters[\textcolor{stringliteral}{'W'} + str(l)] = \(\backslash\)}
+\DoxyCodeLine{00016             np.random.randn(layer\_dims[l], layer\_dims[l-\/1])*0.01}
+\DoxyCodeLine{00017         parameters[\textcolor{stringliteral}{'b'} + str(l)] = \(\backslash\)}
+\DoxyCodeLine{00018             np.zeros((layer\_dims[l], 1))*0.01}
+\DoxyCodeLine{00019     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00020 }
+\DoxyCodeLine{00021 }
+\DoxyCodeLine{00022 }
+\DoxyCodeLine{00027 \textcolor{keyword}{def }deep\_sigmoid(Z):}
+\DoxyCodeLine{00028     A = 1/(1+np.exp(-\/Z))}
+\DoxyCodeLine{00029     cache = Z}
+\DoxyCodeLine{00030     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00031 }
+\DoxyCodeLine{00032 }
+\DoxyCodeLine{00037 \textcolor{keyword}{def }deep\_compute\_cost(AL, Y):}
+\DoxyCodeLine{00038     m = Y.shape[1]}
+\DoxyCodeLine{00039     cost = -\/1.0/m * np.sum(np.multiply(Y, np.log(AL)) + \(\backslash\)}
+\DoxyCodeLine{00040                            np.multiply((1-\/Y), np.log(1-\/AL)))    }
+\DoxyCodeLine{00041     cost = cost.squeeze()}
+\DoxyCodeLine{00042     assert(cost.shape == ())}
+\DoxyCodeLine{00043     }
+\DoxyCodeLine{00044     \textcolor{keywordflow}{return} cost}
+\DoxyCodeLine{00045 }
+\DoxyCodeLine{00046 }
+\DoxyCodeLine{00047 }
+\DoxyCodeLine{00053 \textcolor{keyword}{def }predict(w, b, X):}
+\DoxyCodeLine{00054     m = X.shape[1]}
+\DoxyCodeLine{00055     Y\_prediction = np.zeros((1,m))}
+\DoxyCodeLine{00056     w = w.reshape(X.shape[0], 1)}
+\DoxyCodeLine{00057     Z = linear(w, X, b)}
+\DoxyCodeLine{00058     A = sigmoid(Z)}
+\DoxyCodeLine{00059     \textcolor{comment}{\#TODO replace this with pandas apply function}}
+\DoxyCodeLine{00060     \textcolor{comment}{\#RELU-\/like activation}}
+\DoxyCodeLine{00061     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(A.shape[1]):}
+\DoxyCodeLine{00062         Y\_prediction[0][i] = 1 \textcolor{keywordflow}{if} A[0][i]>0.5 \textcolor{keywordflow}{else} 0}
+\DoxyCodeLine{00063     assert(Y\_prediction.shape == (1, m))}
+\DoxyCodeLine{00064     \textcolor{keywordflow}{return} Y\_prediction}
+\DoxyCodeLine{00065 }
+\DoxyCodeLine{00066 }
+\DoxyCodeLine{00067 }
+\DoxyCodeLine{00072 \textcolor{keyword}{def }relu(Z):}
+\DoxyCodeLine{00073     A = np.maximum(0,Z)}
+\DoxyCodeLine{00074     assert(A.shape == Z.shape)}
+\DoxyCodeLine{00075     cache = Z }
+\DoxyCodeLine{00076     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00077 }
+\DoxyCodeLine{00078 }
+\DoxyCodeLine{00083 \textcolor{keyword}{def }relu\_backward(dA, cache):   }
+\DoxyCodeLine{00084     Z = cache}
+\DoxyCodeLine{00085 }
+\DoxyCodeLine{00086     dZ = np.array(dA, copy=\textcolor{keyword}{True})}
+\DoxyCodeLine{00087     \textcolor{keyword}{assert} (dZ.shape == Z.shape)}
+\DoxyCodeLine{00088 }
+\DoxyCodeLine{00089     dZ[Z <= 0] = 0    }
+\DoxyCodeLine{00090     \textcolor{keywordflow}{return} dZ}
+\DoxyCodeLine{00091 }
+\DoxyCodeLine{00092 }
+\DoxyCodeLine{00097 \textcolor{keyword}{def }sigmoid\_backward(dA, cache):}
+\DoxyCodeLine{00098     Z = cache}
+\DoxyCodeLine{00099     s = 1/(1+np.exp(-\/Z))}
+\DoxyCodeLine{00100     dZ = dA * s * (1-\/s)}
+\DoxyCodeLine{00101     \textcolor{keyword}{assert} (dZ.shape == Z.shape)}
+\DoxyCodeLine{00102     \textcolor{keywordflow}{return} dZ}
+\DoxyCodeLine{00103 }
+\DoxyCodeLine{00104 }
+\DoxyCodeLine{00105 }
+\DoxyCodeLine{00112 \textcolor{keyword}{def }linear\_forward(A, W, b):}
+\DoxyCodeLine{00113     Z = np.dot(W, A) + b}
+\DoxyCodeLine{00114     cache = (A, W, b)}
+\DoxyCodeLine{00115     \textcolor{keywordflow}{return} Z, cache}
+\DoxyCodeLine{00116 }
+\DoxyCodeLine{00117 }
+\DoxyCodeLine{00121 \textcolor{keyword}{def }tanh\_activation(z):}
+\DoxyCodeLine{00122     \textcolor{keywordflow}{return} np.tanh(z)}
+\DoxyCodeLine{00123 }
+\DoxyCodeLine{00124 }
+\DoxyCodeLine{00132 \textcolor{keyword}{def }deep\_linear\_activation\_forward(A\_prev, W, b, activation):}
+\DoxyCodeLine{00133     \textcolor{keywordflow}{if} activation == \textcolor{stringliteral}{"sigmoid"}:}
+\DoxyCodeLine{00134         Z, linear\_cache = linear\_forward(A\_prev, W, b)}
+\DoxyCodeLine{00135         A, activation\_cache = deep\_sigmoid(Z)}
+\DoxyCodeLine{00136     }
+\DoxyCodeLine{00137     \textcolor{keywordflow}{elif} activation == \textcolor{stringliteral}{"relu"}:}
+\DoxyCodeLine{00138         Z, linear\_cache = linear\_forward(A\_prev, W, b)}
+\DoxyCodeLine{00139         A, activation\_cache = relu(Z)}
+\DoxyCodeLine{00140     }
+\DoxyCodeLine{00141     \textcolor{keyword}{assert} (A.shape == (W.shape[0], A\_prev.shape[1]))}
+\DoxyCodeLine{00142     cache = (linear\_cache, activation\_cache)}
+\DoxyCodeLine{00143     \textcolor{keywordflow}{return} A, cache}
+\DoxyCodeLine{00144 }
+\DoxyCodeLine{00145 }
+\DoxyCodeLine{00146 }
+\DoxyCodeLine{00153 \textcolor{keyword}{def }deep\_linear\_backward(dZ, cache):}
+\DoxyCodeLine{00154     A\_prev, W, b = cache}
+\DoxyCodeLine{00155     m = A\_prev.shape[1]}
+\DoxyCodeLine{00156 }
+\DoxyCodeLine{00157     dW = 1.0/m *np.dot(dZ, A\_prev.T)}
+\DoxyCodeLine{00158     db = 1.0/m * np.sum(dZ, axis=1, keepdims=\textcolor{keyword}{True})}
+\DoxyCodeLine{00159     dA\_prev = np.dot(W.T, dZ)}
+\DoxyCodeLine{00160     }
+\DoxyCodeLine{00161     \textcolor{keyword}{assert} (dA\_prev.shape == A\_prev.shape)}
+\DoxyCodeLine{00162     \textcolor{keyword}{assert} (dW.shape == W.shape)}
+\DoxyCodeLine{00163     \textcolor{keyword}{assert} (db.shape == b.shape)}
+\DoxyCodeLine{00164     }
+\DoxyCodeLine{00165     \textcolor{keywordflow}{return} dA\_prev, dW, db}
+\DoxyCodeLine{00166 }
+\DoxyCodeLine{00167 }
+\DoxyCodeLine{00175 \textcolor{keyword}{def }deep\_linear\_activation\_backward(dA, cache, activation):}
+\DoxyCodeLine{00176     linear\_cache, activation\_cache = cache}
+\DoxyCodeLine{00177     assert(dA.shape == activation\_cache.shape)}
+\DoxyCodeLine{00178     \textcolor{keywordflow}{if} activation == \textcolor{stringliteral}{"relu"}:}
+\DoxyCodeLine{00179         dZ = relu\_backward(dA, activation\_cache)}
+\DoxyCodeLine{00180         dA\_prev, dW, db = deep\_linear\_backward(dZ, linear\_cache)}
+\DoxyCodeLine{00181     \textcolor{keywordflow}{elif} activation == \textcolor{stringliteral}{"sigmoid"}:}
+\DoxyCodeLine{00182         dZ = sigmoid\_backward(dA, activation\_cache)}
+\DoxyCodeLine{00183         dA\_prev, dW, db = deep\_linear\_backward(dZ, linear\_cache)}
+\DoxyCodeLine{00184     \textcolor{keywordflow}{return} dA\_prev, dW, db}
+\DoxyCodeLine{00185 }
+\DoxyCodeLine{00186 }
+\DoxyCodeLine{00192 \textcolor{keyword}{def }L\_model\_forward(X, parameters):}
+\DoxyCodeLine{00193     caches = []}
+\DoxyCodeLine{00194     A = X}
+\DoxyCodeLine{00195     L = len(parameters) // 2}
+\DoxyCodeLine{00196     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} range(1, L):}
+\DoxyCodeLine{00197         A, cache = deep\_linear\_activation\_forward(A, parameters[\textcolor{stringliteral}{'W'}+str(l)], parameters[\textcolor{stringliteral}{'b'}+str(l)], \textcolor{stringliteral}{'relu'})}
+\DoxyCodeLine{00198         caches.append(cache)}
+\DoxyCodeLine{00199     AL, cache = deep\_linear\_activation\_forward(A, parameters[\textcolor{stringliteral}{'W'}+str(L)], parameters[\textcolor{stringliteral}{'b'}+str(L)], \textcolor{stringliteral}{'sigmoid'})}
+\DoxyCodeLine{00200     caches.append(cache)}
+\DoxyCodeLine{00201     assert(AL.shape == (1,X.shape[1]))}
+\DoxyCodeLine{00202     \textcolor{keywordflow}{return} AL, caches}
+\DoxyCodeLine{00203 }
+\DoxyCodeLine{00204 }
+\DoxyCodeLine{00209 \textcolor{keyword}{def }update\_parameters(parameters, grads, learning\_rate):}
+\DoxyCodeLine{00210     L = len(parameters) // 2 }
+\DoxyCodeLine{00211     \textcolor{comment}{\# Update rule for each parameter. Use a for loop.}}
+\DoxyCodeLine{00212     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} range(L):}
+\DoxyCodeLine{00213         w=parameters[\textcolor{stringliteral}{"W"} + str(l+1)]}
+\DoxyCodeLine{00214         b=parameters[\textcolor{stringliteral}{"b"} + str(l+1)]}
+\DoxyCodeLine{00215         dw=learning\_rate*grads[\textcolor{stringliteral}{'dW'}+str(l+1)]}
+\DoxyCodeLine{00216         db=learning\_rate*grads[\textcolor{stringliteral}{'db'}+str(l+1)]}
+\DoxyCodeLine{00217         parameters[\textcolor{stringliteral}{"W"} + str(l+1)] = w -\/ learning\_rate * dw}
+\DoxyCodeLine{00218         parameters[\textcolor{stringliteral}{"b"} + str(l+1)] = b -\/ learning\_rate * db}
+\DoxyCodeLine{00219     \textcolor{keywordflow}{return} parameters}
+\DoxyCodeLine{00220 }
+\DoxyCodeLine{00221 }
+\DoxyCodeLine{00227 \textcolor{keyword}{def }L\_model\_backward(AL, Y, caches):}
+\DoxyCodeLine{00228     grads = \{\}}
+\DoxyCodeLine{00229     L = len(caches)}
+\DoxyCodeLine{00230     m = AL.shape[1]}
+\DoxyCodeLine{00231     Y = Y.reshape(AL.shape)}
+\DoxyCodeLine{00232     \textcolor{comment}{\# Initializing the backpropagation}}
+\DoxyCodeLine{00233     dA\_prev = -\/(np.divide(Y, AL) -\/ np.divide(1 -\/ Y, 1 -\/ AL))}
+\DoxyCodeLine{00234     \textcolor{comment}{\#dA\_prev =  Y -\/ AL / np.dot(1-\/AL, AL.T) * 4.734719705992509}}
+\DoxyCodeLine{00235     current\_cache = caches[L-\/1]}
+\DoxyCodeLine{00236     grads[\textcolor{stringliteral}{"dA"} + str(L-\/1)], grads[\textcolor{stringliteral}{"dW"} + str(L)], grads[\textcolor{stringliteral}{"db"} + str(L)] = deep\_linear\_activation\_backward(dA\_prev, current\_cache, \textcolor{stringliteral}{'sigmoid'})}
+\DoxyCodeLine{00237     \textcolor{keywordflow}{for} l \textcolor{keywordflow}{in} reversed(range(L-\/1)):}
+\DoxyCodeLine{00238         current\_cache = caches[l]}
+\DoxyCodeLine{00239         dA\_prev\_temp, dW\_temp, db\_temp = deep\_linear\_activation\_backward(grads[\textcolor{stringliteral}{"dA"} + str(l+1)], current\_cache, \textcolor{stringliteral}{'relu'})}
+\DoxyCodeLine{00240         grads[\textcolor{stringliteral}{"dA"} + str(l)] = dA\_prev\_temp}
+\DoxyCodeLine{00241         grads[\textcolor{stringliteral}{"dW"} + str(l+1)] = dW\_temp}
+\DoxyCodeLine{00242         grads[\textcolor{stringliteral}{"db"} + str(l+1)] = db\_temp}
+\DoxyCodeLine{00243     \textcolor{keywordflow}{return} grads}
+
+\end{DoxyCode}

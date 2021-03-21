@@ -1,0 +1,25 @@
+\hypertarget{lr__utils_8py_source}{}\doxysection{lr\+\_\+utils.\+py}
+\label{lr__utils_8py_source}\index{aipy/lr\_utils.py@{aipy/lr\_utils.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} h5py}
+\DoxyCodeLine{00003     }
+\DoxyCodeLine{00004     }
+\DoxyCodeLine{00005 \textcolor{keyword}{def }load\_dataset():}
+\DoxyCodeLine{00006     train\_dataset = h5py.File(\textcolor{stringliteral}{'datasets/train\_catvnoncat.h5'}, \textcolor{stringliteral}{"r"})}
+\DoxyCodeLine{00007     train\_set\_x\_orig = np.array(train\_dataset[\textcolor{stringliteral}{"train\_set\_x"}][:]) \textcolor{comment}{\# your train set features}}
+\DoxyCodeLine{00008     train\_set\_y\_orig = np.array(train\_dataset[\textcolor{stringliteral}{"train\_set\_y"}][:]) \textcolor{comment}{\# your train set labels}}
+\DoxyCodeLine{00009 }
+\DoxyCodeLine{00010     test\_dataset = h5py.File(\textcolor{stringliteral}{'datasets/test\_catvnoncat.h5'}, \textcolor{stringliteral}{"r"})}
+\DoxyCodeLine{00011     test\_set\_x\_orig = np.array(test\_dataset[\textcolor{stringliteral}{"test\_set\_x"}][:]) \textcolor{comment}{\# your test set features}}
+\DoxyCodeLine{00012     test\_set\_y\_orig = np.array(test\_dataset[\textcolor{stringliteral}{"test\_set\_y"}][:]) \textcolor{comment}{\# your test set labels}}
+\DoxyCodeLine{00013 }
+\DoxyCodeLine{00014     classes = np.array(test\_dataset[\textcolor{stringliteral}{"list\_classes"}][:]) \textcolor{comment}{\# the list of classes}}
+\DoxyCodeLine{00015     }
+\DoxyCodeLine{00016     train\_set\_y\_orig = train\_set\_y\_orig.reshape((1, train\_set\_y\_orig.shape[0]))}
+\DoxyCodeLine{00017     test\_set\_y\_orig = test\_set\_y\_orig.reshape((1, test\_set\_y\_orig.shape[0]))}
+\DoxyCodeLine{00018     }
+\DoxyCodeLine{00019     \textcolor{keywordflow}{return} train\_set\_x\_orig, train\_set\_y\_orig, test\_set\_x\_orig, test\_set\_y\_orig, classes}
+
+\end{DoxyCode}

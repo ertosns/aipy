@@ -1,0 +1,50 @@
+\hypertarget{logistic__regression__test_8py_source}{}\doxysection{logistic\+\_\+regression\+\_\+test.\+py}
+\label{logistic__regression__test_8py_source}\index{aipy/logistic\_regression\_test.py@{aipy/logistic\_regression\_test.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} unittest}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00003 \textcolor{keyword}{from} logistic\_regression \textcolor{keyword}{import} *}
+\DoxyCodeLine{00004 }
+\DoxyCodeLine{\Hypertarget{logistic__regression__test_8py_source_l00005}\mbox{\hyperlink{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test}{00005}} \textcolor{keyword}{class }\mbox{\hyperlink{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test}{LR\_Test}}(unittest.TestCase):}
+\DoxyCodeLine{00006     \textcolor{keyword}{def }test\_sigmoid(self):}
+\DoxyCodeLine{00007         z = np.array([0,2])}
+\DoxyCodeLine{00008         a = sigmoid(z)}
+\DoxyCodeLine{00009         a\_e = np.array([0.5,0.88079708])}
+\DoxyCodeLine{00010         self.assertTrue(np.allclose(a, a\_e))}
+\DoxyCodeLine{00011         }
+\DoxyCodeLine{00012     \textcolor{keyword}{def }test\_initialize\_with\_zeros(self):}
+\DoxyCodeLine{00013         dim = 2}
+\DoxyCodeLine{00014         w, b = initialize\_with\_zeros(dim)}
+\DoxyCodeLine{00015         assert(w.shape == (dim, 1))}
+\DoxyCodeLine{00016         assert(isinstance(b, float) \textcolor{keywordflow}{or} isinstance(b, int))}
+\DoxyCodeLine{00017         self.assertTrue(np.allclose(w, np.array([[0],[0]])))}
+\DoxyCodeLine{00018         self.assertEqual(b, 0)}
+\DoxyCodeLine{00019 }
+\DoxyCodeLine{00020     \textcolor{keyword}{def }test\_initialization(self):}
+\DoxyCodeLine{00021         np.random.seed(1)}
+\DoxyCodeLine{00022         parameters = initialize\_parameters(2, 4, 1)}
+\DoxyCodeLine{00023         W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00024         b1 = parameters[\textcolor{stringliteral}{'b1'}]}
+\DoxyCodeLine{00025         W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00026         b2 = parameters[\textcolor{stringliteral}{'b2'}]}
+\DoxyCodeLine{00027         }
+\DoxyCodeLine{00028         eW1 = np.array([[-\/0.00416758, -\/0.00056267],}
+\DoxyCodeLine{00029                         [-\/0.02136196,  0.01640271],}
+\DoxyCodeLine{00030                         [-\/0.01793436, -\/0.00841747],}
+\DoxyCodeLine{00031                         [ 0.00502881, -\/0.01245288]])}
+\DoxyCodeLine{00032         eb1 = np.array([[ 0.],}
+\DoxyCodeLine{00033                         [ 0.],}
+\DoxyCodeLine{00034                         [ 0.],}
+\DoxyCodeLine{00035                         [ 0.]])}
+\DoxyCodeLine{00036         eW2 = np.array([[-\/0.01057952, -\/0.00909008, 0.00551454, 0.02292208]])}
+\DoxyCodeLine{00037         eb2 = np.array([[ 0.]])}
+\DoxyCodeLine{00038         self.assertTrue(np.allclose(W1, eW1))}
+\DoxyCodeLine{00039         self.assertTrue(np.allclose(b1, eb1))}
+\DoxyCodeLine{00040         self.assertTrue(np.allclose(W2, eW2))}
+\DoxyCodeLine{00041         self.assertTrue(np.allclose(b2, eb2))}
+\DoxyCodeLine{00042 }
+\DoxyCodeLine{00043 \textcolor{keywordflow}{if} \_\_name\_\_ == \textcolor{stringliteral}{'\_\_main\_\_'}:}
+\DoxyCodeLine{00044     unittest.main()}
+
+\end{DoxyCode}

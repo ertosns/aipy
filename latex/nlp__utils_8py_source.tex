@@ -1,0 +1,392 @@
+\hypertarget{nlp__utils_8py_source}{}\doxysection{nlp\+\_\+utils.\+py}
+\label{nlp__utils_8py_source}\index{aipy/nlp\_utils.py@{aipy/nlp\_utils.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} re}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} string}
+\DoxyCodeLine{00003 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00004 }
+\DoxyCodeLine{00005 \textcolor{keyword}{from} nltk.corpus \textcolor{keyword}{import} stopwords}
+\DoxyCodeLine{00006 \textcolor{keyword}{from} nltk.stem \textcolor{keyword}{import} PorterStemmer}
+\DoxyCodeLine{00007 \textcolor{keyword}{from} nltk.tokenize \textcolor{keyword}{import} TweetTokenizer}
+\DoxyCodeLine{00008 }
+\DoxyCodeLine{00009 \textcolor{keyword}{import} pickle}
+\DoxyCodeLine{00010 }
+\DoxyCodeLine{00011 }
+\DoxyCodeLine{00015 \textcolor{keyword}{def }process\_tweet(tweet):}
+\DoxyCodeLine{00016     stemmer = PorterStemmer()}
+\DoxyCodeLine{00017     stopwords\_english = stopwords.words(\textcolor{stringliteral}{'english'})}
+\DoxyCodeLine{00018     \textcolor{comment}{\# remove stock market tickers like \$GE}}
+\DoxyCodeLine{00019     tweet = re.sub(\textcolor{stringliteral}{r'\(\backslash\)\$\(\backslash\)w*'}, \textcolor{stringliteral}{''}, tweet)}
+\DoxyCodeLine{00020     \textcolor{comment}{\# remove old style retweet text "RT"}}
+\DoxyCodeLine{00021     tweet = re.sub(\textcolor{stringliteral}{r'\string^RT[\(\backslash\)s]+'}, \textcolor{stringliteral}{''}, tweet)}
+\DoxyCodeLine{00022     \textcolor{comment}{\# remove hyperlinks}}
+\DoxyCodeLine{00023     tweet = re.sub(\textcolor{stringliteral}{r'https?:\(\backslash\)/\(\backslash\)/.*[\(\backslash\)r\(\backslash\)n]*'}, \textcolor{stringliteral}{''}, tweet)}
+\DoxyCodeLine{00024     \textcolor{comment}{\# remove hashtags}}
+\DoxyCodeLine{00025     \textcolor{comment}{\# only removing the hash \# sign from the word}}
+\DoxyCodeLine{00026     tweet = re.sub(\textcolor{stringliteral}{r'\#'}, \textcolor{stringliteral}{''}, tweet)}
+\DoxyCodeLine{00027     \textcolor{comment}{\# tokenize tweets}}
+\DoxyCodeLine{00028     tokenizer = TweetTokenizer(preserve\_case=\textcolor{keyword}{False}, strip\_handles=\textcolor{keyword}{True},}
+\DoxyCodeLine{00029                                reduce\_len=\textcolor{keyword}{True})}
+\DoxyCodeLine{00030     tweet\_tokens = tokenizer.tokenize(tweet)}
+\DoxyCodeLine{00031 }
+\DoxyCodeLine{00032     tweets\_clean = []}
+\DoxyCodeLine{00033     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} tweet\_tokens:}
+\DoxyCodeLine{00034         \textcolor{keywordflow}{if} (word \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} stopwords\_english \textcolor{keywordflow}{and}  \textcolor{comment}{\# remove stopwords}}
+\DoxyCodeLine{00035                 word \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} string.punctuation):  \textcolor{comment}{\# remove punctuation}}
+\DoxyCodeLine{00036             \textcolor{comment}{\# tweets\_clean.append(word)}}
+\DoxyCodeLine{00037             stem\_word = stemmer.stem(word)  \textcolor{comment}{\# stemming word}}
+\DoxyCodeLine{00038             tweets\_clean.append(stem\_word)}
+\DoxyCodeLine{00039 }
+\DoxyCodeLine{00040     \textcolor{keywordflow}{return} tweets\_clean}
+\DoxyCodeLine{00041 }
+\DoxyCodeLine{00042 }
+\DoxyCodeLine{00047 \textcolor{keyword}{def }build\_freqs(tweets, ys):}
+\DoxyCodeLine{00048     }
+\DoxyCodeLine{00049     \textcolor{comment}{\# Convert np array to list since zip needs an iterable.}}
+\DoxyCodeLine{00050     \textcolor{comment}{\# The squeeze is necessary or the list ends up with one element}}
+\DoxyCodeLine{00051     \textcolor{comment}{\# Also note that this is just a NOP if ys is already a list.}}
+\DoxyCodeLine{00052     yslist = np.squeeze(ys).tolist()}
+\DoxyCodeLine{00053     \textcolor{comment}{\# Start with an empty dictionary and populate it by looping over all tweets}}
+\DoxyCodeLine{00054     \textcolor{comment}{\# and over all processed words in each tweet.}}
+\DoxyCodeLine{00055     }
+\DoxyCodeLine{00056     freqs = \{\}}
+\DoxyCodeLine{00057     \textcolor{keywordflow}{for} y, tweet \textcolor{keywordflow}{in} zip(yslist, tweets):}
+\DoxyCodeLine{00058         \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} process\_tweet(tweet):}
+\DoxyCodeLine{00059             pair = (word, y)}
+\DoxyCodeLine{00060             \textcolor{keywordflow}{if} pair \textcolor{keywordflow}{in} freqs:}
+\DoxyCodeLine{00061                 freqs[pair] += 1}
+\DoxyCodeLine{00062             \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00063                 freqs[pair] = 1}
+\DoxyCodeLine{00064                 }
+\DoxyCodeLine{00065     \textcolor{keywordflow}{return} freqs}
+\DoxyCodeLine{00066 }
+\DoxyCodeLine{00067 }
+\DoxyCodeLine{00073 \textcolor{keyword}{def }lookup(freqs, word, label):    }
+\DoxyCodeLine{00074     n = 0  \textcolor{comment}{\# freqs.get((word, label), 0)}}
+\DoxyCodeLine{00075 }
+\DoxyCodeLine{00076     pair = (word, label)}
+\DoxyCodeLine{00077     \textcolor{keywordflow}{if} (pair \textcolor{keywordflow}{in} freqs):}
+\DoxyCodeLine{00078         n = freqs[pair]}
+\DoxyCodeLine{00079 }
+\DoxyCodeLine{00080     \textcolor{keywordflow}{return} n}
+\DoxyCodeLine{00081 }
+\DoxyCodeLine{00082 }
+\DoxyCodeLine{00083 }
+\DoxyCodeLine{00089 \textcolor{keyword}{def }train\_naive\_bayes(freqs, train\_x, train\_y):}
+\DoxyCodeLine{00090     loglikelihood = \{\}}
+\DoxyCodeLine{00091     logprior = 0}
+\DoxyCodeLine{00092     }
+\DoxyCodeLine{00093     \textcolor{comment}{\# calculate V, the number of unique words in the vocabulary}}
+\DoxyCodeLine{00094     vocab = set([pair[0] \textcolor{keywordflow}{for} pair \textcolor{keywordflow}{in} freqs.keys()])}
+\DoxyCodeLine{00095     V = len(vocab)}
+\DoxyCodeLine{00096     }
+\DoxyCodeLine{00097     \textcolor{comment}{\# calculate N\_pos and N\_neg}}
+\DoxyCodeLine{00098     N\_pos = N\_neg = 0}
+\DoxyCodeLine{00099     \textcolor{keywordflow}{for} pair \textcolor{keywordflow}{in} freqs.keys():}
+\DoxyCodeLine{00100         \textcolor{keywordflow}{if} pair[1] > 0:}
+\DoxyCodeLine{00101             N\_pos += freqs[(pair)]}
+\DoxyCodeLine{00102         \textcolor{keywordflow}{else}:}
+\DoxyCodeLine{00103             N\_neg += freqs[(pair)]}
+\DoxyCodeLine{00104 }
+\DoxyCodeLine{00105     D = len(train\_y)}
+\DoxyCodeLine{00106     D\_pos = sum(train\_y)}
+\DoxyCodeLine{00107     D\_neg = D-\/D\_pos}
+\DoxyCodeLine{00108 }
+\DoxyCodeLine{00109     \textcolor{comment}{\# Calculate logprior}}
+\DoxyCodeLine{00110     logprior = np.log(D\_pos/float(D\_neg))}
+\DoxyCodeLine{00111     \textcolor{comment}{\# For each word in the vocabulary...}}
+\DoxyCodeLine{00112     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} vocab:}
+\DoxyCodeLine{00113         \textcolor{comment}{\# get the positive and negative frequency of the word}}
+\DoxyCodeLine{00114         freq\_pos = freqs.get((word,1), 0)}
+\DoxyCodeLine{00115         freq\_neg = freqs.get((word,0), 0)}
+\DoxyCodeLine{00116         \textcolor{comment}{\# calculate the probability that each word is positive, and negative}}
+\DoxyCodeLine{00117         p\_w\_pos = float(freq\_pos+1)/(N\_pos+V)}
+\DoxyCodeLine{00118         p\_w\_neg = float(freq\_neg+1)/(N\_neg+V)}
+\DoxyCodeLine{00119         \textcolor{comment}{\# calculate the log likelihood of the word}}
+\DoxyCodeLine{00120         loglikelihood[word] = np.log(p\_w\_pos/p\_w\_neg)}
+\DoxyCodeLine{00121 }
+\DoxyCodeLine{00122     \textcolor{keywordflow}{return} logprior, loglikelihood}
+\DoxyCodeLine{00123 }
+\DoxyCodeLine{00124 }
+\DoxyCodeLine{00125 }
+\DoxyCodeLine{00126 }
+\DoxyCodeLine{00131 \textcolor{keyword}{def }naive\_bayes\_predict(tweet, logprior, loglikelihood):}
+\DoxyCodeLine{00132     \textcolor{comment}{\# process the tweet to get a list of words}}
+\DoxyCodeLine{00133     word\_l = process\_tweet(tweet)}
+\DoxyCodeLine{00134     \textcolor{comment}{\# initialize probability to zero}}
+\DoxyCodeLine{00135     p = 0}
+\DoxyCodeLine{00136     \textcolor{comment}{\# add the logprior}}
+\DoxyCodeLine{00137     p += logprior}
+\DoxyCodeLine{00138 }
+\DoxyCodeLine{00139     \textcolor{keywordflow}{for} word \textcolor{keywordflow}{in} word\_l:}
+\DoxyCodeLine{00140         }
+\DoxyCodeLine{00141         \textcolor{comment}{\# check if the word exists in the loglikelihood dictionary}}
+\DoxyCodeLine{00142         \textcolor{keywordflow}{if} word \textcolor{keywordflow}{in} loglikelihood:}
+\DoxyCodeLine{00143             \textcolor{comment}{\# add the log likelihood of that word to the probability}}
+\DoxyCodeLine{00144             p += loglikelihood.get(word, 0)}
+\DoxyCodeLine{00145             }
+\DoxyCodeLine{00146     \textcolor{keywordflow}{return} p}
+\DoxyCodeLine{00147 }
+\DoxyCodeLine{00148 }
+\DoxyCodeLine{00154 \textcolor{keyword}{def }get\_ratio(freqs, word):}
+\DoxyCodeLine{00155     pos\_neg\_ratio = \{\textcolor{stringliteral}{'positive'}: 0, \textcolor{stringliteral}{'negative'}: 0, \textcolor{stringliteral}{'ratio'}: 0.0\}}
+\DoxyCodeLine{00156     pos\_neg\_ratio[\textcolor{stringliteral}{'positive'}] = lookup(freqs, word, 1)}
+\DoxyCodeLine{00157     pos\_neg\_ratio[\textcolor{stringliteral}{'negative'}] = lookup(freqs, word, 0)}
+\DoxyCodeLine{00158   }
+\DoxyCodeLine{00159     pos\_neg\_ratio[\textcolor{stringliteral}{'ratio'}] = (pos\_neg\_ratio[\textcolor{stringliteral}{'positive'}]+1)/(pos\_neg\_ratio[\textcolor{stringliteral}{'negative'}]+1)}
+\DoxyCodeLine{00160     \textcolor{keywordflow}{return} pos\_neg\_ratio}
+\DoxyCodeLine{00161 }
+\DoxyCodeLine{00162 }
+\DoxyCodeLine{00172 \textcolor{keyword}{def }get\_words\_by\_threshold(freqs, label, threshold):}
+\DoxyCodeLine{00173     word\_list = \{\}}
+\DoxyCodeLine{00174     \textcolor{keywordflow}{for} key \textcolor{keywordflow}{in} freqs.keys():}
+\DoxyCodeLine{00175         word, \_ = key}
+\DoxyCodeLine{00176         }
+\DoxyCodeLine{00177         \textcolor{comment}{\# get the positive/negative ratio for a word}}
+\DoxyCodeLine{00178         pos\_neg\_ratio = get\_ratio(freqs, word)}
+\DoxyCodeLine{00179 }
+\DoxyCodeLine{00180         \textcolor{comment}{\# if the label is 1 and the ratio is greater than or equal to the threshold...}}
+\DoxyCodeLine{00181         \textcolor{keywordflow}{if} label == 1 \textcolor{keywordflow}{and} pos\_neg\_ratio[\textcolor{stringliteral}{'ratio'}]>=threshold:}
+\DoxyCodeLine{00182 }
+\DoxyCodeLine{00183             \textcolor{comment}{\# Add the pos\_neg\_ratio to the dictionary}}
+\DoxyCodeLine{00184             word\_list[word]=pos\_neg\_ratio}
+\DoxyCodeLine{00185 }
+\DoxyCodeLine{00186         \textcolor{comment}{\# If the label is 0 and the pos\_neg\_ratio is less than or equal to the threshold...}}
+\DoxyCodeLine{00187         \textcolor{keywordflow}{elif} label == 0 \textcolor{keywordflow}{and} pos\_neg\_ratio[\textcolor{stringliteral}{'ratio'}]<=threshold:}
+\DoxyCodeLine{00188 }
+\DoxyCodeLine{00189             \textcolor{comment}{\# Add the pos\_neg\_ratio to the dictionary}}
+\DoxyCodeLine{00190             word\_list[word]=pos\_neg\_ratio}
+\DoxyCodeLine{00191 }
+\DoxyCodeLine{00192     \textcolor{keywordflow}{return} word\_list}
+\DoxyCodeLine{00193 }
+\DoxyCodeLine{00194 }
+\DoxyCodeLine{00198 \textcolor{keyword}{def }cosine\_similarity(A, B):}
+\DoxyCodeLine{00199     dot = np.dot(A, B)}
+\DoxyCodeLine{00200     norma = np.linalg.norm(A)}
+\DoxyCodeLine{00201     normb = np.linalg.norm(B) }
+\DoxyCodeLine{00202     cos = dot/(norma*normb)}
+\DoxyCodeLine{00203     }
+\DoxyCodeLine{00204     \textcolor{keywordflow}{return} cos}
+\DoxyCodeLine{00205 }
+\DoxyCodeLine{00206 }
+\DoxyCodeLine{00207 }
+\DoxyCodeLine{00211 \textcolor{keyword}{def }euclidean(A, B):}
+\DoxyCodeLine{00212     d = np.linalg.norm(A-\/B)}
+\DoxyCodeLine{00213     \textcolor{keywordflow}{return} d}
+\DoxyCodeLine{00214 }
+\DoxyCodeLine{00215 }
+\DoxyCodeLine{00216 }
+\DoxyCodeLine{00222 \textcolor{keyword}{def }compute\_pca(X, n\_components=2):}
+\DoxyCodeLine{00223     X\_demeaned = X -\/ np.mean(X, axis=0)}
+\DoxyCodeLine{00224     covariance\_matrix = np.cov(X\_demeaned, rowvar=\textcolor{keyword}{False})}
+\DoxyCodeLine{00225     eigen\_vals, eigen\_vecs = np.linalg.eigh(covariance\_matrix)}
+\DoxyCodeLine{00226 }
+\DoxyCodeLine{00227     idx\_sorted = np.argsort(eigen\_vals)    }
+\DoxyCodeLine{00228     idx\_sorted\_decreasing = idx\_sorted[::-\/1]}
+\DoxyCodeLine{00229 }
+\DoxyCodeLine{00230     eigen\_vecs\_sorted = eigen\_vecs[:,idx\_sorted\_decreasing]}
+\DoxyCodeLine{00231     eigen\_vecs\_subset = eigen\_vecs\_sorted[:,0:n\_components]}
+\DoxyCodeLine{00232 }
+\DoxyCodeLine{00233     X\_reduced = np.dot(eigen\_vecs\_subset.T, X\_demeaned.T).T}
+\DoxyCodeLine{00234 }
+\DoxyCodeLine{00235     \textcolor{keywordflow}{return} X\_reduced}
+\DoxyCodeLine{00236 }
+\DoxyCodeLine{00237 }
+\DoxyCodeLine{00238 }
+\DoxyCodeLine{00245 \textcolor{keyword}{def }compute\_loss(X, Y, R):}
+\DoxyCodeLine{00246     m = X.shape[0]}
+\DoxyCodeLine{00247     diff = np.dot(X, R) -\/ Y}
+\DoxyCodeLine{00248     loss = (1.0/m)*np.sum(np.square(diff))}
+\DoxyCodeLine{00249     }
+\DoxyCodeLine{00250     \textcolor{keywordflow}{return} loss}
+\DoxyCodeLine{00251 }
+\DoxyCodeLine{00252 }
+\DoxyCodeLine{00253 }
+\DoxyCodeLine{00260 \textcolor{keyword}{def }compute\_gradient(X, Y, R):}
+\DoxyCodeLine{00261     m = X.shape[0]}
+\DoxyCodeLine{00262     gradient = (2/m)*np.dot(X.T, np.dot(X, R) -\/ Y)}
+\DoxyCodeLine{00263     \textcolor{keywordflow}{return} gradient}
+\DoxyCodeLine{00264 }
+\DoxyCodeLine{00265 }
+\DoxyCodeLine{00272 \textcolor{keyword}{def }align\_embeddings(X, Y, train\_steps=100, learning\_rate=0.0003):}
+\DoxyCodeLine{00273     np.random.seed(129)}
+\DoxyCodeLine{00274     \textcolor{comment}{\# the number of columns in X is the number of dimensions for a word vector (e.g. 300)}}
+\DoxyCodeLine{00275     \textcolor{comment}{\# R is a square matrix with length equal to the number of dimensions in th  word embedding}}
+\DoxyCodeLine{00276     R = np.random.rand(X.shape[1], X.shape[1])}
+\DoxyCodeLine{00277     }
+\DoxyCodeLine{00278     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(train\_steps):}
+\DoxyCodeLine{00279         \textcolor{keywordflow}{if} i \% 25 == 0:}
+\DoxyCodeLine{00280             print(f\textcolor{stringliteral}{"loss at iteration \{i\} is: \{compute\_loss(X, Y, R):.4f\}"})}
+\DoxyCodeLine{00281         \textcolor{comment}{\# use the function that you defined to compute the gradient}}
+\DoxyCodeLine{00282         gradient = compute\_gradient(X, Y, R)}
+\DoxyCodeLine{00283 }
+\DoxyCodeLine{00284         \textcolor{comment}{\# update R by subtracting the learning rate times gradient}}
+\DoxyCodeLine{00285         R -\/= learning\_rate*gradient}
+\DoxyCodeLine{00286     \textcolor{keywordflow}{return} R}
+\DoxyCodeLine{00287 }
+\DoxyCodeLine{00288 }
+\DoxyCodeLine{00294 \textcolor{keyword}{def }nearest\_neighbor(v, candidates, k=1):}
+\DoxyCodeLine{00295     similarity\_l = []}
+\DoxyCodeLine{00296     \textcolor{keywordflow}{for} row \textcolor{keywordflow}{in} candidates:}
+\DoxyCodeLine{00297         cos\_similarity = cosine\_similarity(v, row.T)}
+\DoxyCodeLine{00298         similarity\_l.append(cos\_similarity)}
+\DoxyCodeLine{00299     }
+\DoxyCodeLine{00300     sorted\_ids = np.argsort(similarity\_l,0)}
+\DoxyCodeLine{00301 }
+\DoxyCodeLine{00302     \textcolor{comment}{\# get the indices of the k most similar candidate vectors}}
+\DoxyCodeLine{00303     k\_idx = sorted\_ids[-\/k:]}
+\DoxyCodeLine{00304     \textcolor{keywordflow}{return} k\_idx}
+\DoxyCodeLine{00305 }
+\DoxyCodeLine{00306 }
+\DoxyCodeLine{00311 \textcolor{keyword}{def }hash\_value\_of\_vector(v, planes):}
+\DoxyCodeLine{00312     \textcolor{comment}{\# for the set of planes,}}
+\DoxyCodeLine{00313     \textcolor{comment}{\# calculate the dot product between the vector and the matrix containing the planes}}
+\DoxyCodeLine{00314     \textcolor{comment}{\# remember that planes has shape (300, 10)}}
+\DoxyCodeLine{00315     \textcolor{comment}{\# The dot product will have the shape (1,10)}}
+\DoxyCodeLine{00316     dot\_product = np.dot(v, planes)}
+\DoxyCodeLine{00317 }
+\DoxyCodeLine{00318     \textcolor{comment}{\# get the sign of the dot product (1,10) shaped vector}}
+\DoxyCodeLine{00319     sign\_of\_dot\_product = np.sign(dot\_product)}
+\DoxyCodeLine{00320 }
+\DoxyCodeLine{00321     \textcolor{comment}{\# set h to be false (eqivalent to 0 when used in operations) if the sign is negative,}}
+\DoxyCodeLine{00322     \textcolor{comment}{\# and true (equivalent to 1) if the sign is positive (1,10) shaped vector}}
+\DoxyCodeLine{00323     h = [1 \textcolor{keywordflow}{if} s>=0 \textcolor{keywordflow}{else} 0 \textcolor{keywordflow}{for} s \textcolor{keywordflow}{in} sign\_of\_dot\_product.reshape(planes.shape[1])]}
+\DoxyCodeLine{00324     \textcolor{comment}{\# remove extra un-\/used dimensions (convert this from a 2D to a 1D array)}}
+\DoxyCodeLine{00325     h = np.squeeze(h)}
+\DoxyCodeLine{00326 }
+\DoxyCodeLine{00327     \textcolor{comment}{\# initialize the hash value to 0}}
+\DoxyCodeLine{00328     hash\_value = 0}
+\DoxyCodeLine{00329 }
+\DoxyCodeLine{00330     n\_planes = planes.shape[1]}
+\DoxyCodeLine{00331     \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(n\_planes):}
+\DoxyCodeLine{00332         \textcolor{comment}{\# increment the hash value by 2\string^i * h\_i}}
+\DoxyCodeLine{00333         hash\_value += 2**i * h[i]}
+\DoxyCodeLine{00334 }
+\DoxyCodeLine{00335     \textcolor{comment}{\# cast hash\_value as an integer}}
+\DoxyCodeLine{00336     hash\_value = int(hash\_value)}
+\DoxyCodeLine{00337     }
+\DoxyCodeLine{00338     \textcolor{keywordflow}{return} hash\_value}
+\DoxyCodeLine{00339 }
+\DoxyCodeLine{00340     \textcolor{stringliteral}{"""}}
+\DoxyCodeLine{00341 \textcolor{stringliteral}{    Input:}}
+\DoxyCodeLine{00342 \textcolor{stringliteral}{        -\/ vecs: list of vectors to be hashed.}}
+\DoxyCodeLine{00343 \textcolor{stringliteral}{        -\/ planes: the matrix of planes in a single "universe", with shape (embedding dimensions, number of planes).}}
+\DoxyCodeLine{00344 \textcolor{stringliteral}{    Output:}}
+\DoxyCodeLine{00345 \textcolor{stringliteral}{        -\/ hash\_table: dictionary -\/ keys are hashes, values are lists of vectors (hash buckets)}}
+\DoxyCodeLine{00346 \textcolor{stringliteral}{        -\/ id\_table: dictionary -\/ keys are hashes, values are list of vectors id's}}
+\DoxyCodeLine{00347 \textcolor{stringliteral}{                            (it's used to know which tweet corresponds to the hashed vector)}}
+\DoxyCodeLine{00348 \textcolor{stringliteral}{    """}}
+\DoxyCodeLine{00349 \textcolor{keyword}{def }make\_hash\_table(vecs, planes):}
+\DoxyCodeLine{00350 }
+\DoxyCodeLine{00351     \textcolor{comment}{\# number of planes is the number of columns in the planes matrix}}
+\DoxyCodeLine{00352     num\_of\_planes = planes.shape[1]}
+\DoxyCodeLine{00353 }
+\DoxyCodeLine{00354     \textcolor{comment}{\# number of buckets is 2\string^(number of planes)}}
+\DoxyCodeLine{00355     num\_buckets = 2**num\_of\_planes}
+\DoxyCodeLine{00356 }
+\DoxyCodeLine{00357     \textcolor{comment}{\# create the hash table as a dictionary.}}
+\DoxyCodeLine{00358     \textcolor{comment}{\# Keys are integers (0,1,2.. number of buckets)}}
+\DoxyCodeLine{00359     \textcolor{comment}{\# Values are empty lists}}
+\DoxyCodeLine{00360     hash\_table = \{i:[] \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(num\_buckets)\}}
+\DoxyCodeLine{00361 }
+\DoxyCodeLine{00362     \textcolor{comment}{\# create the id table as a dictionary.}}
+\DoxyCodeLine{00363     \textcolor{comment}{\# Keys are integers (0,1,2... number of buckets)}}
+\DoxyCodeLine{00364     \textcolor{comment}{\# Values are empty lists}}
+\DoxyCodeLine{00365     id\_table = \{i:[] \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(num\_buckets)\}}
+\DoxyCodeLine{00366 }
+\DoxyCodeLine{00367     \textcolor{comment}{\# for each vector in 'vecs'}}
+\DoxyCodeLine{00368     \textcolor{keywordflow}{for} i, v \textcolor{keywordflow}{in} enumerate(vecs):}
+\DoxyCodeLine{00369         \textcolor{comment}{\# calculate the hash value for the vector}}
+\DoxyCodeLine{00370         h = hash\_value\_of\_vector(v, planes)}
+\DoxyCodeLine{00371 }
+\DoxyCodeLine{00372         \textcolor{comment}{\# store the vector into hash\_table at key h,}}
+\DoxyCodeLine{00373         \textcolor{comment}{\# by appending the vector v to the list at key h}}
+\DoxyCodeLine{00374         hash\_table[h]+=[v]}
+\DoxyCodeLine{00375 }
+\DoxyCodeLine{00376         \textcolor{comment}{\# store the vector's index 'i' (each document is given a unique integer 0,1,2...)}}
+\DoxyCodeLine{00377         \textcolor{comment}{\# the key is the h, and the 'i' is appended to the list at key h}}
+\DoxyCodeLine{00378         id\_table[h]+=[i]}
+\DoxyCodeLine{00379 }
+\DoxyCodeLine{00380     \textcolor{keywordflow}{return} hash\_table, id\_table}
+\DoxyCodeLine{00381 }
+\DoxyCodeLine{00382 }
+\DoxyCodeLine{00383 }
+\DoxyCodeLine{00384 \textcolor{keyword}{def }approximate\_knn(doc\_id, v, planes\_l, k=1, num\_universes\_to\_use=N\_UNIVERSES):}
+\DoxyCodeLine{00385     }
+\DoxyCodeLine{00386     \textcolor{keyword}{assert} num\_universes\_to\_use <= N\_UNIVERSES}
+\DoxyCodeLine{00387 }
+\DoxyCodeLine{00388     \textcolor{comment}{\# Vectors that will be checked as possible nearest neighbor}}
+\DoxyCodeLine{00389     vecs\_to\_consider\_l = list()}
+\DoxyCodeLine{00390 }
+\DoxyCodeLine{00391     \textcolor{comment}{\# list of document IDs}}
+\DoxyCodeLine{00392     ids\_to\_consider\_l = list()}
+\DoxyCodeLine{00393 }
+\DoxyCodeLine{00394     \textcolor{comment}{\# create a set for ids to consider, for faster checking if a document ID already exists in the set}}
+\DoxyCodeLine{00395     ids\_to\_consider\_set = set()}
+\DoxyCodeLine{00396 }
+\DoxyCodeLine{00397     \textcolor{comment}{\# loop through the universes of planes}}
+\DoxyCodeLine{00398     \textcolor{keywordflow}{for} universe\_id \textcolor{keywordflow}{in} range(num\_universes\_to\_use):}
+\DoxyCodeLine{00399 }
+\DoxyCodeLine{00400         \textcolor{comment}{\# get the set of planes from the planes\_l list, for this particular universe\_id}}
+\DoxyCodeLine{00401         planes = planes\_l[universe\_id]}
+\DoxyCodeLine{00402 }
+\DoxyCodeLine{00403         \textcolor{comment}{\# get the hash value of the vector for this set of planes}}
+\DoxyCodeLine{00404         hash\_value = hash\_value\_of\_vector(v, planes)}
+\DoxyCodeLine{00405 }
+\DoxyCodeLine{00406         \textcolor{comment}{\# get the hash table for this particular universe\_id}}
+\DoxyCodeLine{00407         hash\_table = hash\_tables[universe\_id]}
+\DoxyCodeLine{00408 }
+\DoxyCodeLine{00409         \textcolor{comment}{\# get the list of document vectors for this hash table, where the key is the hash\_value}}
+\DoxyCodeLine{00410         document\_vectors\_l = hash\_table[hash\_value]}
+\DoxyCodeLine{00411 }
+\DoxyCodeLine{00412         \textcolor{comment}{\# get the id\_table for this particular universe\_id}}
+\DoxyCodeLine{00413         id\_table = id\_tables[universe\_id]}
+\DoxyCodeLine{00414 }
+\DoxyCodeLine{00415         \textcolor{comment}{\# get the subset of documents to consider as nearest neighbors from this id\_table dictionary}}
+\DoxyCodeLine{00416         new\_ids\_to\_consider = id\_table[hash\_value]}
+\DoxyCodeLine{00417 }
+\DoxyCodeLine{00418         }
+\DoxyCodeLine{00419 }
+\DoxyCodeLine{00420         \textcolor{comment}{\# remove the id of the document that we're searching}}
+\DoxyCodeLine{00421         \textcolor{keywordflow}{if} doc\_id \textcolor{keywordflow}{in} new\_ids\_to\_consider:}
+\DoxyCodeLine{00422             new\_ids\_to\_consider.remove(doc\_id)}
+\DoxyCodeLine{00423             print(f\textcolor{stringliteral}{"removed doc\_id \{doc\_id\} of input vector from new\_ids\_to\_search"})}
+\DoxyCodeLine{00424 }
+\DoxyCodeLine{00425         \textcolor{comment}{\# loop through the subset of document vectors to consider}}
+\DoxyCodeLine{00426         \textcolor{keywordflow}{for} i, new\_id \textcolor{keywordflow}{in} enumerate(new\_ids\_to\_consider):}
+\DoxyCodeLine{00427 }
+\DoxyCodeLine{00428             \textcolor{comment}{\# if the document ID is not yet in the set ids\_to\_consider...}}
+\DoxyCodeLine{00429             \textcolor{keywordflow}{if} new\_id \textcolor{keywordflow}{not} \textcolor{keywordflow}{in} ids\_to\_consider\_set:}
+\DoxyCodeLine{00430                 \textcolor{comment}{\# access document\_vectors\_l list at index i to get the embedding}}
+\DoxyCodeLine{00431                 \textcolor{comment}{\# then append it to the list of vectors to consider as possible nearest neighbors}}
+\DoxyCodeLine{00432                 document\_vector\_at\_i = document\_vectors\_l[i]}
+\DoxyCodeLine{00433                 vecs\_to\_consider\_l.append(document\_vector\_at\_i)}
+\DoxyCodeLine{00434 }
+\DoxyCodeLine{00435                 \textcolor{comment}{\# append the new\_id (the index for the document) to the list of ids to consider}}
+\DoxyCodeLine{00436                 ids\_to\_consider\_l.append(new\_id)}
+\DoxyCodeLine{00437 }
+\DoxyCodeLine{00438                 \textcolor{comment}{\# also add the new\_id to the set of ids to consider}}
+\DoxyCodeLine{00439                 \textcolor{comment}{\# (use this to check if new\_id is not already in the IDs to consider)}}
+\DoxyCodeLine{00440                 \textcolor{comment}{\#temp=[item for item in ids\_to\_consider\_set]}}
+\DoxyCodeLine{00441                 \textcolor{comment}{\#temp+=[new\_id]}}
+\DoxyCodeLine{00442                 \textcolor{comment}{\#ids\_to\_consider\_set=set(i for i in temp)}}
+\DoxyCodeLine{00443                 ids\_to\_consider\_set.add(new\_id)}
+\DoxyCodeLine{00444 }
+\DoxyCodeLine{00445     \textcolor{comment}{\# Now run k-\/NN on the smaller set of vecs-\/to-\/consider.}}
+\DoxyCodeLine{00446     print(\textcolor{stringliteral}{"Fast considering \%d vecs"} \% len(vecs\_to\_consider\_l))}
+\DoxyCodeLine{00447 }
+\DoxyCodeLine{00448     \textcolor{comment}{\# convert the vecs to consider set to a list, then to a numpy array}}
+\DoxyCodeLine{00449     vecs\_to\_consider\_arr = np.array(vecs\_to\_consider\_l)}
+\DoxyCodeLine{00450 }
+\DoxyCodeLine{00451     \textcolor{comment}{\# call nearest neighbors on the reduced list of candidate vectors}}
+\DoxyCodeLine{00452     nearest\_neighbor\_idx\_l = nearest\_neighbor(v, vecs\_to\_consider\_arr, k=k)}
+\DoxyCodeLine{00453 }
+\DoxyCodeLine{00454     \textcolor{comment}{\# Use the nearest neighbor index list as indices into the ids to consider}}
+\DoxyCodeLine{00455     \textcolor{comment}{\# create a list of nearest neighbors by the document ids}}
+\DoxyCodeLine{00456     nearest\_neighbor\_ids = [ids\_to\_consider\_l[idx]}
+\DoxyCodeLine{00457                             \textcolor{keywordflow}{for} idx \textcolor{keywordflow}{in} nearest\_neighbor\_idx\_l]}
+\DoxyCodeLine{00458 }
+\DoxyCodeLine{00459     \textcolor{keywordflow}{return} nearest\_neighbor\_ids}
+
+\end{DoxyCode}

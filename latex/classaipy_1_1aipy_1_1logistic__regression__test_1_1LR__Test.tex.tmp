@@ -1,0 +1,34 @@
+\hypertarget{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test}{}\doxysection{aipy.\+aipy.\+logistic\+\_\+regression\+\_\+test.\+L\+R\+\_\+\+Test Class Reference}
+\label{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test}\index{aipy.aipy.logistic\_regression\_test.LR\_Test@{aipy.aipy.logistic\_regression\_test.LR\_Test}}
+
+
+Inheritance diagram for aipy.\+aipy.\+logistic\+\_\+regression\+\_\+test.\+L\+R\+\_\+\+Test\+:
+% FIG 0
+
+
+Collaboration diagram for aipy.\+aipy.\+logistic\+\_\+regression\+\_\+test.\+L\+R\+\_\+\+Test\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_adf92c9ab62cd9d01c44269f90b0a6b36}\label{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_adf92c9ab62cd9d01c44269f90b0a6b36}} 
+def {\bfseries test\+\_\+sigmoid} (self)
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_aaf8815a3dd47fabf2de73fbf78e599cb}\label{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_aaf8815a3dd47fabf2de73fbf78e599cb}} 
+def {\bfseries test\+\_\+initialize\+\_\+with\+\_\+zeros} (self)
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_a471b4f8b099cfa5f16faf365c8f4a8c7}\label{classaipy_1_1aipy_1_1logistic__regression__test_1_1LR__Test_a471b4f8b099cfa5f16faf365c8f4a8c7}} 
+def {\bfseries test\+\_\+initialization} (self)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{logistic__regression__test_8py_source_l00005}{5}} of file \mbox{\hyperlink{logistic__regression__test_8py_source}{logistic\+\_\+regression\+\_\+test.\+py}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+aipy/logistic\+\_\+regression\+\_\+test.\+py\end{DoxyCompactItemize}

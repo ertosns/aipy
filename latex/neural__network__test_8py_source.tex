@@ -1,0 +1,161 @@
+\hypertarget{neural__network__test_8py_source}{}\doxysection{neural\+\_\+network\+\_\+test.\+py}
+\label{neural__network__test_8py_source}\index{aipy/neural\_network\_test.py@{aipy/neural\_network\_test.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001 \textcolor{keyword}{import} unittest}
+\DoxyCodeLine{00002 \textcolor{keyword}{import} numpy \textcolor{keyword}{as} np}
+\DoxyCodeLine{00003 \textcolor{keyword}{from} neural\_network \textcolor{keyword}{import} *}
+\DoxyCodeLine{00004 }
+\DoxyCodeLine{\Hypertarget{neural__network__test_8py_source_l00005}\mbox{\hyperlink{classaipy_1_1aipy_1_1neural__network__test_1_1Utils__Test}{00005}} \textcolor{keyword}{class }\mbox{\hyperlink{classaipy_1_1aipy_1_1neural__network__test_1_1Utils__Test}{Utils\_Test}}(unittest.TestCase):}
+\DoxyCodeLine{00006         }
+\DoxyCodeLine{00007     \textcolor{keyword}{def }test\_deep\_initialization(self):}
+\DoxyCodeLine{00008         parameters = deep\_initialization([5,4,3])}
+\DoxyCodeLine{00009         W1 = parameters[\textcolor{stringliteral}{'W1'}]}
+\DoxyCodeLine{00010         b1 = parameters[\textcolor{stringliteral}{'b1'}]}
+\DoxyCodeLine{00011         W2 = parameters[\textcolor{stringliteral}{'W2'}]}
+\DoxyCodeLine{00012         b2 = parameters[\textcolor{stringliteral}{'b2'}]}
+\DoxyCodeLine{00013 }
+\DoxyCodeLine{00014         eW1 = np.array([[ 0.01788628, 0.0043651, 0.00096497, -\/0.01863493, -\/0.00277388], [-\/0.00354759, -\/0.00082741, -\/0.00627001, -\/0.00043818, -\/0.00477218], [-\/0.01313865, 0.00884622, 0.00881318, 0.01709573, 0.00050034], [-\/0.00404677, -\/0.0054536, -\/0.01546477, 0.00982367, -\/0.01101068]])}
+\DoxyCodeLine{00015         eb1 = np.array([[ 0.], [ 0.], [ 0.], [ 0.]])}
+\DoxyCodeLine{00016         eW2 = np.array([[-\/0.01185047, -\/0.0020565, 0.01486148, 0.00236716], [-\/0.01023785, -\/0.00712993, 0.00625245, -\/0.00160513], [-\/0.00768836, -\/0.00230031, 0.00745056, 0.01976111]])}
+\DoxyCodeLine{00017         eb2 = np.array([[ 0.], [ 0.], [ 0.]])}
+\DoxyCodeLine{00018 }
+\DoxyCodeLine{00019         self.assertTrue(np.allclose(W1, eW1))}
+\DoxyCodeLine{00020         self.assertTrue(np.allclose(b1, eb1))}
+\DoxyCodeLine{00021         self.assertTrue(np.allclose(W2, eW2))}
+\DoxyCodeLine{00022         self.assertTrue(np.allclose(b2, eb2))}
+\DoxyCodeLine{00023         }
+\DoxyCodeLine{00024     \textcolor{keyword}{def }test\_linear\_forward(self):}
+\DoxyCodeLine{00025         np.random.seed(1)}
+\DoxyCodeLine{00026         A = np.random.randn(3,2)}
+\DoxyCodeLine{00027         W = np.random.randn(1,3)}
+\DoxyCodeLine{00028         b = np.random.randn(1,1)}
+\DoxyCodeLine{00029         Z, linear\_cache = linear\_forward(A, W, b)}
+\DoxyCodeLine{00030         self.assertTrue(np.allclose(Z, np.array([[3.26295337, -\/1.23429987]])))}
+\DoxyCodeLine{00031 }
+\DoxyCodeLine{00032     \textcolor{keyword}{def }test\_linear\_activation\_forward(self):}
+\DoxyCodeLine{00033         np.random.seed(2)}
+\DoxyCodeLine{00034         A\_prev = np.random.randn(3,2)}
+\DoxyCodeLine{00035         W = np.random.randn(1,3)}
+\DoxyCodeLine{00036         b = np.random.randn(1,1)}
+\DoxyCodeLine{00037         A, linear\_activation\_cache = deep\_linear\_activation\_forward(A\_prev, W, b, activation = \textcolor{stringliteral}{"sigmoid"})}
+\DoxyCodeLine{00038         self.assertTrue(np.allclose(A, np.array([[0.96890023, 0.11013289]])))}
+\DoxyCodeLine{00039         A, linear\_activation\_cache = deep\_linear\_activation\_forward(A\_prev, W, b, activation = \textcolor{stringliteral}{"relu"})}
+\DoxyCodeLine{00040         self.assertTrue(np.allclose(A, np.array([[3.43896131, 0.]])))}
+\DoxyCodeLine{00041 }
+\DoxyCodeLine{00042     \textcolor{keyword}{def }test\_L\_model\_forward(self):}
+\DoxyCodeLine{00043         np.random.seed(6)}
+\DoxyCodeLine{00044         X = np.random.randn(5,4)}
+\DoxyCodeLine{00045         W1 = np.random.randn(4,5)}
+\DoxyCodeLine{00046         b1 = np.random.randn(4,1)}
+\DoxyCodeLine{00047         W2 = np.random.randn(3,4)}
+\DoxyCodeLine{00048         b2 = np.random.randn(3,1)}
+\DoxyCodeLine{00049         W3 = np.random.randn(1,3)}
+\DoxyCodeLine{00050         b3 = np.random.randn(1,1)}
+\DoxyCodeLine{00051         }
+\DoxyCodeLine{00052         parameters = \{\textcolor{stringliteral}{"W1"}: W1,}
+\DoxyCodeLine{00053                       \textcolor{stringliteral}{"b1"}: b1,}
+\DoxyCodeLine{00054                       \textcolor{stringliteral}{"W2"}: W2,}
+\DoxyCodeLine{00055                       \textcolor{stringliteral}{"b2"}: b2,}
+\DoxyCodeLine{00056                       \textcolor{stringliteral}{"W3"}: W3,}
+\DoxyCodeLine{00057                       \textcolor{stringliteral}{"b3"}: b3\}}
+\DoxyCodeLine{00058         }
+\DoxyCodeLine{00059         AL, caches = L\_model\_forward(X, parameters)}
+\DoxyCodeLine{00060         self.assertEqual(len(caches), 3)}
+\DoxyCodeLine{00061         self.assertTrue(np.allclose(AL, np.array([[0.03921668, 0.70498921, 0.19734387, 0.04728177]])))}
+\DoxyCodeLine{00062     }
+\DoxyCodeLine{00063     \textcolor{keyword}{def }test\_linear\_backward(self):}
+\DoxyCodeLine{00064         np.random.seed(1)}
+\DoxyCodeLine{00065         dZ = np.random.randn(3,4)}
+\DoxyCodeLine{00066         A = np.random.randn(5,4)}
+\DoxyCodeLine{00067         W = np.random.randn(3,5)}
+\DoxyCodeLine{00068         b = np.random.randn(3,1)}
+\DoxyCodeLine{00069         linear\_cache = (A, W, b)}
+\DoxyCodeLine{00070         dA\_prev, dW, db = deep\_linear\_backward(dZ, linear\_cache)}
+\DoxyCodeLine{00071         dA\_prev\_e = np.array(}
+\DoxyCodeLine{00072             [[-\/1.15171336,  0.06718465, -\/0.3204696,   2.09812712],}
+\DoxyCodeLine{00073              [ 0.60345879, -\/3.72508701,  5.81700741, -\/3.84326836],}
+\DoxyCodeLine{00074              [-\/0.4319552,  -\/1.30987417,  1.72354705,  0.05070578],}
+\DoxyCodeLine{00075              [-\/0.38981415,  0.60811244, -\/1.25938424,  1.47191593],}
+\DoxyCodeLine{00076              [-\/2.52214926,  2.67882552, -\/0.67947465,  1.48119548]])}
+\DoxyCodeLine{00077 }
+\DoxyCodeLine{00078         dW\_e = np.array([}
+\DoxyCodeLine{00079             [0.07313866,-\/0.0976715, -\/0.87585828, 0.73763362, 0.00785716],}
+\DoxyCodeLine{00080             [ 0.85508818,  0.37530413, -\/0.59912655,  0.71278189, -\/0.58931808],}
+\DoxyCodeLine{00081             [ 0.97913304, -\/0.24376494, -\/0.08839671,  0.55151192, -\/0.10290907]])}
+\DoxyCodeLine{00082         db\_e = np.array([[-\/0.14713786], [-\/0.11313155],[-\/0.13209101]])}
+\DoxyCodeLine{00083         self.assertTrue(np.allclose(dA\_prev, dA\_prev\_e))}
+\DoxyCodeLine{00084         self.assertTrue(np.allclose(dW, dW\_e))}
+\DoxyCodeLine{00085         self.assertTrue(np.allclose(db, db\_e))}
+\DoxyCodeLine{00086         }
+\DoxyCodeLine{00087     \textcolor{keyword}{def }test\_linear\_activation\_backward(self):}
+\DoxyCodeLine{00088         np.random.seed(2)}
+\DoxyCodeLine{00089         dA = np.random.randn(1,2)}
+\DoxyCodeLine{00090         A = np.random.randn(3,2)}
+\DoxyCodeLine{00091         W = np.random.randn(1,3)}
+\DoxyCodeLine{00092         b = np.random.randn(1,1)}
+\DoxyCodeLine{00093         Z = np.random.randn(1,2)}
+\DoxyCodeLine{00094         linear\_cache = (A, W, b)}
+\DoxyCodeLine{00095         activation\_cache = Z}
+\DoxyCodeLine{00096         linear\_activation\_cache = (linear\_cache, activation\_cache)}
+\DoxyCodeLine{00097         }
+\DoxyCodeLine{00098         dA\_prev, dW, db = deep\_linear\_activation\_backward(dA, linear\_activation\_cache, activation = \textcolor{stringliteral}{"sigmoid"})}
+\DoxyCodeLine{00099         dA\_prev\_e=np.array([[ 0.11017994, 0.01105339],}
+\DoxyCodeLine{00100                             [ 0.09466817, 0.00949723],}
+\DoxyCodeLine{00101                             [-\/0.05743092, -\/0.00576154]]).reshape((3,2))}
+\DoxyCodeLine{00102         dW\_e=np.array(  [[ 0.10266786, 0.09778551, -\/0.01968084]])}
+\DoxyCodeLine{00103         db\_e=np.array(  [[-\/0.05729622]])}
+\DoxyCodeLine{00104         self.assertTrue(np.allclose(dA\_prev, dA\_prev\_e))}
+\DoxyCodeLine{00105         self.assertTrue(np.allclose(dW, dW\_e))}
+\DoxyCodeLine{00106         self.assertTrue(np.allclose(db, db\_e))}
+\DoxyCodeLine{00107         }
+\DoxyCodeLine{00108         dA\_prev, dW, db = deep\_linear\_activation\_backward(dA, linear\_activation\_cache, activation = \textcolor{stringliteral}{"relu"})}
+\DoxyCodeLine{00109         dA\_prev\_e=np.array([[0.44090989, 0.],}
+\DoxyCodeLine{00110                             [0.37883606, 0.],}
+\DoxyCodeLine{00111                             [-\/0.2298228, 0.]])}
+\DoxyCodeLine{00112         dW\_e=np.array([[ 0.44513824, 0.37371418, -\/0.10478989]])}
+\DoxyCodeLine{00113         db\_e=np.array([[-\/0.20837892]])}
+\DoxyCodeLine{00114         self.assertTrue(np.allclose(dA\_prev, dA\_prev\_e))}
+\DoxyCodeLine{00115         self.assertTrue(np.allclose(dW, dW\_e))}
+\DoxyCodeLine{00116         self.assertTrue(np.allclose(db, db\_e))}
+\DoxyCodeLine{00117         }
+\DoxyCodeLine{00118     \textcolor{keyword}{def }test\_L\_model\_backward(self):}
+\DoxyCodeLine{00119         np.random.seed(3)}
+\DoxyCodeLine{00120         AL = np.random.randn(1, 2)}
+\DoxyCodeLine{00121         Y\_assess = np.array([[1, 0]])}
+\DoxyCodeLine{00122         \textcolor{comment}{\#}}
+\DoxyCodeLine{00123         A1 = np.random.randn(4,2)}
+\DoxyCodeLine{00124         W1 = np.random.randn(3,4)}
+\DoxyCodeLine{00125         b1 = np.random.randn(3,1)}
+\DoxyCodeLine{00126         Z1 = np.random.randn(3,2)}
+\DoxyCodeLine{00127         linear\_cache\_activation\_1 = ((A1, W1, b1), Z1)}
+\DoxyCodeLine{00128         \textcolor{comment}{\#}}
+\DoxyCodeLine{00129         A2 = np.random.randn(3,2)}
+\DoxyCodeLine{00130         W2 = np.random.randn(1,3)}
+\DoxyCodeLine{00131         b2 = np.random.randn(1,1)}
+\DoxyCodeLine{00132         Z2 = np.random.randn(1,2)}
+\DoxyCodeLine{00133         linear\_cache\_activation\_2 = ((A2, W2, b2), Z2)}
+\DoxyCodeLine{00134         \textcolor{comment}{\#}}
+\DoxyCodeLine{00135         caches = (linear\_cache\_activation\_1, linear\_cache\_activation\_2)}
+\DoxyCodeLine{00136         grads = L\_model\_backward(AL, Y\_assess, caches)}
+\DoxyCodeLine{00137         dW1=grads[\textcolor{stringliteral}{'dW1'}]}
+\DoxyCodeLine{00138         db1=grads[\textcolor{stringliteral}{'db1'}]}
+\DoxyCodeLine{00139         dA1=grads[\textcolor{stringliteral}{'dA1'}]}
+\DoxyCodeLine{00140         dW1\_e= np.array([[ 0.41010002, 0.07807203, 0.13798444, 0.10502167],}
+\DoxyCodeLine{00141                          [ 0., 0., 0., 0.],}
+\DoxyCodeLine{00142                          [ 0.05283652, 0.01005865, 0.01777766, 0.0135308 ]])}
+\DoxyCodeLine{00143         db1\_e=np.array([[-\/0.22007063],}
+\DoxyCodeLine{00144                         [ 0. ],}
+\DoxyCodeLine{00145                         [-\/0.02835349]])}
+\DoxyCodeLine{00146         dA1\_e=np.array([[ 0.12913162, -\/0.44014127],}
+\DoxyCodeLine{00147                         [-\/0.14175655, 0.48317296],}
+\DoxyCodeLine{00148                         [0.01663708, -\/0.05670698]])}
+\DoxyCodeLine{00149 }
+\DoxyCodeLine{00150         self.assertTrue(np.allclose(dW1, dW1\_e))}
+\DoxyCodeLine{00151         self.assertTrue(np.allclose(db1, db1\_e))}
+\DoxyCodeLine{00152         self.assertTrue(np.allclose(dA1, dA1\_e))}
+\DoxyCodeLine{00153         }
+\DoxyCodeLine{00154 \textcolor{keywordflow}{if} \_\_name\_\_ == \textcolor{stringliteral}{'\_\_main\_\_'}:}
+\DoxyCodeLine{00155     unittest.main()}
+
+\end{DoxyCode}

@@ -1,0 +1,97 @@
+\hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression}{}\doxysection{aipy.\+aipy.\+core.\+Logistic\+\_\+regression Class Reference}
+\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression}\index{aipy.aipy.core.Logistic\_regression@{aipy.aipy.core.Logistic\_regression}}
+
+
+Inheritance diagram for aipy.\+aipy.\+core.\+Logistic\+\_\+regression\+:
+% FIG 0
+
+
+Collaboration diagram for aipy.\+aipy.\+core.\+Logistic\+\_\+regression\+:
+% FIG 1
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8ab37819bd1f6c82cafa708d4283f593}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, X, Y, learning\+\_\+rate=0.\+01)
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a109cf4420071864356fb16ba0c973e62}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a109cf4420071864356fb16ba0c973e62}} 
+def {\bfseries gradient\+\_\+descent} (self, num\+\_\+iters=100)
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a5fdab4b1579d078ac17331f8fe19d661}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a5fdab4b1579d078ac17331f8fe19d661}} 
+def {\bfseries predict} (x)
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8849cdd47399e4cf8afcd2291bcacc3f}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8849cdd47399e4cf8afcd2291bcacc3f}} 
+def {\bfseries predict} (X)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ae02206641695ab7374588f780fd46934}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ae02206641695ab7374588f780fd46934}} 
+{\bfseries m}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_aa868556a5d495b863f960f938672b6fe}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_aa868556a5d495b863f960f938672b6fe}} 
+{\bfseries X}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a6cfe445c0d09f4022805c7cfea10d792}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a6cfe445c0d09f4022805c7cfea10d792}} 
+{\bfseries Y}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_af773062c3ebeeb0a8ed4c4caa5c269b9}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_af773062c3ebeeb0a8ed4c4caa5c269b9}} 
+{\bfseries b}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ac4ea7382df1c10cb68a34d887aecb49a}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_ac4ea7382df1c10cb68a34d887aecb49a}} 
+{\bfseries w}
+\item 
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a0bf0dedc5b55ba194b624d1e59b9ff47}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a0bf0dedc5b55ba194b624d1e59b9ff47}} 
+{\bfseries alpha}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}a single layer network
+\end{DoxyVerb}
+ 
+
+Definition at line \mbox{\hyperlink{core_8py_source_l00004}{4}} of file \mbox{\hyperlink{core_8py_source}{core.\+py}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8ab37819bd1f6c82cafa708d4283f593}\label{classaipy_1_1aipy_1_1core_1_1Logistic__regression_a8ab37819bd1f6c82cafa708d4283f593}} 
+\index{aipy.aipy.core.Logistic\_regression@{aipy.aipy.core.Logistic\_regression}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!aipy.aipy.core.Logistic\_regression@{aipy.aipy.core.Logistic\_regression}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily def aipy.\+aipy.\+core.\+Logistic\+\_\+regression.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{X,  }\item[{}]{Y,  }\item[{}]{learning\+\_\+rate = {\ttfamily 0.01} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}X: matrix of features which is (m,n+1)
+Y: corresponding labels of the input matrix x, dimensions (m,1)
+W: weight vector of dimension (n+1,1)
+\end{DoxyVerb}
+ 
+
+Definition at line \mbox{\hyperlink{core_8py_source_l00008}{8}} of file \mbox{\hyperlink{core_8py_source}{core.\+py}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00008     \textcolor{keyword}{def }\_\_init\_\_(self, X, Y, learning\_rate=0.01):}
+\DoxyCodeLine{00009         \textcolor{comment}{\#TODO X(m,n+1) why n+1, and not n!!}}
+\DoxyCodeLine{00010         \textcolor{stringliteral}{'''}}
+\DoxyCodeLine{00011 \textcolor{stringliteral}{        X: matrix of features which is (m,n+1)}}
+\DoxyCodeLine{00012 \textcolor{stringliteral}{        Y: corresponding labels of the input matrix x, dimensions (m,1)}}
+\DoxyCodeLine{00013 \textcolor{stringliteral}{        W: weight vector of dimension (n+1,1)}}
+\DoxyCodeLine{00014 \textcolor{stringliteral}{        '''}}
+\DoxyCodeLine{00015         self.m=X.shape[0]}
+\DoxyCodeLine{00016         assert(X.shape[0]==y.shape[0])}
+\DoxyCodeLine{00017         self.X=X.T}
+\DoxyCodeLine{00018         self.Y=Y.T        }
+\DoxyCodeLine{00019         self.b=\textcolor{keywordtype}{None}}
+\DoxyCodeLine{00020         self.w=\textcolor{keywordtype}{None}}
+\DoxyCodeLine{00021         self.b, self.w = initialize\_with\_zeros(X.shape[1])}
+\DoxyCodeLine{00022         self.alpha=learning\_rate}
+\DoxyCodeLine{00023         }
+\DoxyCodeLine{00024     }
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+aipy/core.\+py\end{DoxyCompactItemize}
